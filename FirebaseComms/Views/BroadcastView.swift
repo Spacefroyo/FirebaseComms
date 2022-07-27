@@ -13,7 +13,7 @@ struct BroadcastView: View, Identifiable {
     var id: Int
     
     var broadcast: Broadcast
-    var data: [String: Any]
+    var data: [String: Any] //user data
     @State var expand: Bool = false
     @State var from: BroadcastsView? = nil
     
