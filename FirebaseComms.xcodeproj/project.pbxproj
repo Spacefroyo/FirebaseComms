@@ -28,6 +28,7 @@
 		AC99A29828550A7E005FA788 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29728550A7E005FA788 /* Constants.swift */; };
 		AC99A29A28550E55005FA788 /* ExpandedBroadcastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */; };
 		AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29D285668F7005FA788 /* NewFollowView.swift */; };
+		ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02B92894A9030071C9B5 /* Comment.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		AC99A29728550A7E005FA788 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedBroadcastView.swift; sourceTree = "<group>"; };
 		AC99A29D285668F7005FA788 /* NewFollowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFollowView.swift; sourceTree = "<group>"; };
+		ACBA02B92894A9030071C9B5 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				AC51FB062853B209007411A5 /* FirebaseManager.swift */,
 				AC51FB082853B26C007411A5 /* Broadcast.swift */,
 				AC99A295285507C7005FA788 /* User.swift */,
+				ACBA02B92894A9030071C9B5 /* Comment.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 				AC51FB0D2853C53A007411A5 /* TestView.swift in Sources */,
 				AC51FADC284E64B0007411A5 /* FirebaseCommsApp.swift in Sources */,
 				AC51FB0F2853F284007411A5 /* BroadcastView.swift in Sources */,
+				ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */,
 				AC51FAFD284E9C1D007411A5 /* BroadcastsView.swift in Sources */,
 				AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */,
 				AC99A296285507C7005FA788 /* User.swift in Sources */,

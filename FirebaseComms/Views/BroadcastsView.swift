@@ -117,7 +117,7 @@ struct BroadcastsView: View {
     
     private func getSentBroadcasts() -> [Broadcast] {
 //        sentBroadcasts = ""
-        let arr: [String] = sentBroadcasts?.components(separatedBy: "~") ?? []
+        let arr: [String] = sentBroadcasts?.components(separatedBy: Constants.seperator) ?? []
         var loadedSentBroadcasts: [Broadcast] = []
         for str in arr {
             if !str.isEmpty {
@@ -188,7 +188,7 @@ struct BroadcastsView: View {
         if loadedFollows.count > 0 {
             return loadedFollows
         }
-        let arr: [String] = follows?.components(separatedBy: "~") ?? []
+        let arr: [String] = follows?.components(separatedBy: Constants.seperator) ?? []
         var loadedFollows: [String] = []
         for str in arr {
             if !str.isEmpty {
@@ -251,7 +251,7 @@ struct BroadcastsView: View {
     }
     
     func getBroadcasts() {
-        let arr: [String] = receivedBroadcasts?.components(separatedBy: "~") ?? []
+        let arr: [String] = receivedBroadcasts?.components(separatedBy: Constants.seperator) ?? []
         loadedReceivedBroadcasts = []
 //        for str in arr {
 //            if !str.isEmpty {

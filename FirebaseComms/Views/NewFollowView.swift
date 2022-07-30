@@ -48,8 +48,13 @@ struct NewFollowView: View {
                 print("done1")
                 let data = snapshot?.data() ?? ["follows":[]]
                 var follows = data["follows"] as? [String] ?? []
-                follows.append(data2["uid"] as! String)
-                from?.storeFollow(uid: data2["uid"] as! String)
+                let uid2 = data2["uid"] as! String
+                if follows.contains(uid2) {
+                    print("Already followed")
+                    return
+                }
+                follows.append(uid2)
+                from?.storeFollow(uid: uid2)
                 from?.receivedBroadcastViews()
                 document.setData(["follows": follows]) { err in
                     if let err = err {

@@ -14,11 +14,11 @@ struct ContentView: View {
         if log_Status{
             VStack {
                 if view_Id == 0 {
-                    BroadcastsView()
+                    BroadcastsView()//.transition(.slide)
                 } else if view_Id == 1 {
-                    SettingsView()
+                    SettingsView()//.transition(.slide)
                 } else if view_Id == 2 {
-                    NewBroadcastView()
+                    NewBroadcastView()//.transition(.slide)
                 }
                 
                 Picker(selection: $view_Id, label: Text("Picker here")) {

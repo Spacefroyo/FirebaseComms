@@ -234,7 +234,7 @@ struct NewBroadcastView: View {
     }
     
     private func changeBroadcast(broadcast: Broadcast) {
-        let arr: [String] = sentBroadcasts?.components(separatedBy: "~") ?? []
+        let arr: [String] = sentBroadcasts?.components(separatedBy: Constants.seperator) ?? []
         var loadedSentBroadcasts: [Broadcast] = []
         for str in arr {
             if !str.isEmpty {
