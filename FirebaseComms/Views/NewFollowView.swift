@@ -10,17 +10,21 @@ import Firebase
 import FirebaseFirestore
 
 struct NewFollowView: View {
-    @State var email = ""
+    @State var follow = ""
     @State var from: BroadcastsView? = nil
     var body: some View {
         NavigationView {
             VStack {
-                TextField("Email", text: $email)
+                TextField("Email", text: $follow)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.emailAddress)
+                    .disableAutocorrection(true)
+//                    .textCase(.lowercase)
                 
                 Spacer()
                 
                 Button {
-                    newFollow(email: email)
+                    newFollow(follow: follow)
                     from?.expand = false
                 } label: {
                     Text("Follow")
@@ -28,33 +32,35 @@ struct NewFollowView: View {
             }
             .navigationTitle("New Follow")
         }
+        .onChange(of: follow, perform: {_ in follow = follow.lowercased()})
     }
     
-    func newFollow(email: String) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+//    func lowercaseFollow() {
+//        follow = follow.lowercased()
+//    }
+    
+    func newFollow(follow: String) {
+        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         
-        let document = FirebaseManager.shared.firestore.collection("follows").document(uid)
+        let document = FirebaseManager.shared.firestore.collection("follows").document(email)
         document.getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch broadcastId document: ", error)
                 return
             }
-            FirebaseManager.shared.firestore.collection("uids").document(email.lowercased()).getDocument { snapshot2, error in
+            FirebaseManager.shared.firestore.collection("users").document(follow).getDocument { snapshot2, error in
                 if let error = error {
-                    print("Failed to fetch current user: ", error)
+                    print("Failed to fetch user to follow: ", error)
                     return
                 }
-                guard let data2 = snapshot2?.data() else { return }
-                print("done1")
                 let data = snapshot?.data() ?? ["follows":[]]
                 var follows = data["follows"] as? [String] ?? []
-                let uid2 = data2["uid"] as! String
-                if follows.contains(uid2) {
+                if follows.contains(follow.lowercased()) {
                     print("Already followed")
                     return
                 }
-                follows.append(uid2)
-                from?.storeFollow(uid: uid2)
+                follows.append(follow)
+                from?.storeFollow(email: follow)
                 from?.receivedBroadcastViews()
                 document.setData(["follows": follows]) { err in
                     if let err = err {

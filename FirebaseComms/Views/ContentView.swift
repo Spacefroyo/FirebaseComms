@@ -12,6 +12,7 @@ struct ContentView: View {
     @AppStorage("view_Id") var view_Id = 0
     var body: some View {
         if log_Status{
+            //check whether or not email matches uid, set log_Status to false if not
             VStack {
                 if view_Id == 0 {
                     BroadcastsView()//.transition(.slide)

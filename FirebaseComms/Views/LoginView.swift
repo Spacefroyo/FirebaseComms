@@ -97,14 +97,14 @@ struct LoginView: View {
             
             FirebaseManager.shared.auth.signIn(with: credential) { result, err in
                 
-                guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-                FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+                guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+                FirebaseManager.shared.firestore.collection("users").document(email).getDocument { snapshot, error in
                     if let error = error {
                         print("Failed to fetch current user: ", error)
                         return
                     }
                     guard let data = snapshot?.data() else {
-                        storeUserInformation(email: email, givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
+                        storeUserInformation(givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
                         return
                     }
                 }
@@ -114,22 +114,22 @@ struct LoginView: View {
                     print(error.localizedDescription)
                     return
                   }
-                guard let user = result?.user else{
-                    return
-                }
+//                guard let user = result?.user else{
+//                    return
+//                }
 //                print(user.displayName ?? "Success!")
                 
-                FirebaseManager.shared.firestore.collection("uids")
-                    .document(email).setData(["uid": user.uid]) { err in
-                        if let err = err {
-                            print(err)
-                            return
-                        }
-                    }
+//                FirebaseManager.shared.firestore.collection("uids")
+//                    .document(email).setData(["uid": user.uid]) { err in
+//                        if let err = err {
+//                            print(err)
+//                            return
+//                        }
+//                    }
                 
-                loadFollows(uid: uid)
-                loadSentBroadcasts(uid: uid)
-                
+                loadFollows(email: email)
+                loadSentBroadcasts(email: email)
+//                print("logged in")
                 withAnimation{
                     log_Status = true
                 }
@@ -139,11 +139,11 @@ struct LoginView: View {
         
     }
     
-    private func storeUserInformation(email: String, givenName: String, familyName: String, profilePicUrl: URL) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-        let userData = ["uid": uid, "email": email, "givenName": givenName, "familyName": familyName, "profilePicUrl": profilePicUrl.absoluteString]
+    private func storeUserInformation(givenName: String, familyName: String, profilePicUrl: URL) {
+        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+        let userData = ["email": email, "givenName": givenName, "familyName": familyName, "profilePicUrl": profilePicUrl.absoluteString]
         FirebaseManager.shared.firestore.collection("users")
-            .document(uid).setData(userData) { err in
+            .document(email).setData(userData) { err in
                 if let err = err {
                     print(err)
                     return
@@ -176,9 +176,9 @@ struct LoginView: View {
     
     @AppStorage("follows") var follows: String?
     @State var loadedFollows: [String] = []
-    func loadFollows(uid: String) {
+    func loadFollows(email: String) {
         follows = ""
-        FirebaseManager.shared.firestore.collection("follows").document(uid).getDocument { snapshot, error in
+        FirebaseManager.shared.firestore.collection("follows").document(email).getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch current user: ", error)
                 return
@@ -193,11 +193,11 @@ struct LoginView: View {
     }
     
     @AppStorage("sentBroadcasts") var sentBroadcasts: String?
-    func loadSentBroadcasts(uid: String) {
+    func loadSentBroadcasts(email: String) {
         sentBroadcasts = ""
         FirebaseManager.shared.firestore
             .collection("broadcasts")
-            .document(uid)
+            .document(email)
             .collection("sent")
             .getDocuments { snapshot, error in
                 if let error = error {

@@ -142,13 +142,13 @@ struct NewBroadcastView: View {
     }
     
     private func storeBroadcastInformation(name: String) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         if id != -1 {
             let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "timestamp": Timestamp()] as [String: Any])
             changeBroadcast(broadcast: announcement)
             FirebaseManager.shared.firestore.collection("broadcasts")
-                .document(uid).collection("sent").document("\(id)").setData(announcement.data) { err in
+                .document(email).collection("sent").document("\(id)").setData(announcement.data) { err in
                     if let err = err {
                         print(err)
                         return
@@ -160,7 +160,7 @@ struct NewBroadcastView: View {
                 let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "timestamp": Timestamp()] as [String: Any])
                 storeBroadcast(broadcast: announcement)
                 FirebaseManager.shared.firestore.collection("broadcasts")
-                    .document(uid).collection("sent").document("\(id)").setData(announcement.data) { err in
+                    .document(email).collection("sent").document("\(id)").setData(announcement.data) { err in
                         if let err = err {
                             print(err)
                             return
@@ -171,13 +171,13 @@ struct NewBroadcastView: View {
     }
     
     private func storeBroadcastInformation(name: String, description: String, startDate: Timestamp, endDate: Timestamp, location: String) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         if id != -1 {
             let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "timestamp": Timestamp()] as [String: Any])
             changeBroadcast(broadcast: event)
             FirebaseManager.shared.firestore.collection("broadcasts")
-                .document(uid).collection("sent").document("\(id)").setData(event.data) { err in
+                .document(email).collection("sent").document("\(id)").setData(event.data) { err in
                     if let err = err {
                         print(err)
                         return
@@ -189,7 +189,7 @@ struct NewBroadcastView: View {
                 let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "timestamp": Timestamp()] as [String: Any])
                 storeBroadcast(broadcast: event)
                 FirebaseManager.shared.firestore.collection("broadcasts")
-                    .document(uid).collection("sent").document("\(id)").setData(event.data) { err in
+                    .document(email).collection("sent").document("\(id)").setData(event.data) { err in
                         if let err = err {
                             print(err)
                             return
@@ -259,9 +259,9 @@ struct NewBroadcastView: View {
     }
     
     func deleteBroadcast(broadcast: Broadcast) {
-        let uid = FirebaseManager.shared.auth.currentUser?.uid ?? ""
+        let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
         FirebaseManager.shared.firestore.collection("broadcasts")
-            .document(uid).collection("sent").document("\(id)").delete() { err in
+            .document(email).collection("sent").document("\(id)").delete() { err in
                 if let err = err {
                     print(err)
                     return

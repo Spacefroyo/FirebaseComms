@@ -88,13 +88,13 @@ struct ExpandedBroadcastView: View, Identifiable {
     }
     
     private func storeCommentInformation(name: String, public: Bool) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         if name != "" {
             let announcement = Broadcast(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp()] as [String: Any])
 //            changeBroadcast(broadcast: announcement)
             FirebaseManager.shared.firestore.collection("broadcasts")
-                .document(uid).collection("sent").document("\(cid)").setData(announcement.data) { err in
+                .document(email).collection("sent").document("\(cid)").setData(announcement.data) { err in
                     if let err = err {
                         print(err)
                         return
@@ -106,7 +106,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                 let announcement = Broadcast(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp()] as [String: Any])
                 storeBroadcast(broadcast: announcement)
                 FirebaseManager.shared.firestore.collection("broadcasts")
-                    .document(uid).collection("sent").document("\(cid)").setData(announcement.data) { err in
+                    .document(email).collection("sent").document("\(cid)").setData(announcement.data) { err in
                         if let err = err {
                             print(err)
                             return
@@ -176,9 +176,9 @@ struct ExpandedBroadcastView: View, Identifiable {
     }
     
     func deleteBroadcast(broadcast: Broadcast) {
-        let uid = FirebaseManager.shared.auth.currentUser?.uid ?? ""
+        let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
         FirebaseManager.shared.firestore.collection("broadcasts")
-            .document(uid).collection("sent").document("\(id)").delete() { err in
+            .document(email).collection("sent").document("\(id)").delete() { err in
                 if let err = err {
                     print(err)
                     return
@@ -252,7 +252,7 @@ struct ExpandedBroadcastView_Previews: PreviewProvider {
 //        if displayEvent {
 //            ExpandedBroadcastView(displayEvent, id: -1, broadcast: Broadcast(data: ["name": "testEvent", "id": -1, "uid": "DNE", "timestamp": Timestamp(), "description": "testEvent description goes something like this. blah blah blah blah blah", "startDate": Date(), "endDate": Date(), "location": "testLocation"]))
 //        } else {
-            ExpandedBroadcastView(id: -1, broadcast: Broadcast(data: ["name": "testAnnouncement goes something like this. blah blah blah blah blah", "id": -1, "uid": "DNE", "timestamp": Timestamp()]))
+            ExpandedBroadcastView(id: -1, broadcast: Broadcast(data: ["name": "testAnnouncement goes something like this. blah blah blah blah blah", "id": -1, "timestamp": Timestamp()]))
 //        }
     }
 }

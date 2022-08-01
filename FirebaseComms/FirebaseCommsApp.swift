@@ -13,6 +13,7 @@ import GoogleSignIn
 @main
 struct FirebaseCommsApp: App {
     @AppStorage("view_Id") var view_Id = 0
+//    @AppStorage("log_Status") var log_Status = false
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
         WindowGroup {

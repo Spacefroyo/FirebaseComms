@@ -20,11 +20,12 @@ class BroadcastsViewModel: ObservableObject {
     @AppStorage("givenName") var givenName : String!
     @AppStorage("familyName") var familyName : String!
     @AppStorage("profilePicUrl") var profilePicUrl : URL!
+//    @AppStorage("log_Status") var log_Status = false
 
     private func fetchCurrentUser() {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
+        guard let email = FirebaseManager.shared.auth.currentUser?.email else {return}
         
-        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+        FirebaseManager.shared.firestore.collection("users").document(email).getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch current user: ", error)
                 return
@@ -130,8 +131,8 @@ struct BroadcastsView: View {
         return loadedSentBroadcasts
     }
     
-    private func getUserData(uid: String, completion: @escaping ([String:Any]) -> ()){
-        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+    private func getUserData(email: String, completion: @escaping ([String:Any]) -> ()){
+        FirebaseManager.shared.firestore.collection("users").document(email).getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch current user: ", error)
                 return
@@ -147,17 +148,18 @@ struct BroadcastsView: View {
         broadcastViews = []
         var viewId = 0
         for broadcast in loadedSentBroadcasts {
-            FirebaseManager.shared.firestore.collection("uids").document(broadcast.data["email"] as! String).getDocument { snapshot, error in
-                if let error = error {
-                    print("Failed to fetch current user: ", error)
-                    return
-                }
-                guard let data = snapshot?.data() else { return }
-                getUserData(uid: data["uid"] as! String) { data in
-                    broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
-                    viewId += 1
-                }
+            getUserData(email: broadcast.data["email"] as! String) { data in
+                broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
+                viewId += 1
             }
+//            FirebaseManager.shared.firestore.collection("uids").document(broadcast.data["email"] as! String).getDocument { snapshot, error in
+//                if let error = error {
+//                    print("Failed to fetch current user: ", error)
+//                    return
+//                }
+//                guard let data = snapshot?.data() else { return }
+//
+//            }
         }
 //        print("done")
     }
@@ -180,15 +182,17 @@ struct BroadcastsView: View {
     
     @AppStorage("follows") var follows: String?
     @State var loadedFollows: [String] = []
-    func storeFollow(uid: String) {
-        follows = "\(uid)~\(follows ?? "")"
+    func storeFollow(email: String) {
+        follows = "\(email)~\(follows ?? "")"
     }
     
     private func getFollows() -> [String] {
         if loadedFollows.count > 0 {
             return loadedFollows
         }
+//        print("start")
         let arr: [String] = follows?.components(separatedBy: Constants.seperator) ?? []
+//        print("arr: ", arr)
         var loadedFollows: [String] = []
         for str in arr {
             if !str.isEmpty {
@@ -251,7 +255,7 @@ struct BroadcastsView: View {
     }
     
     func getBroadcasts() {
-        let arr: [String] = receivedBroadcasts?.components(separatedBy: Constants.seperator) ?? []
+//        let arr: [String] = receivedBroadcasts?.components(separatedBy: Constants.seperator) ?? []
         loadedReceivedBroadcasts = []
 //        for str in arr {
 //            if !str.isEmpty {
@@ -293,20 +297,21 @@ struct BroadcastsView: View {
             var broadcastViews: [BroadcastView] = []
             for broadcast in loadedReceivedBroadcasts {
                 viewGroup.enter()
-//                print(broadcast.data["id"] as? Int ?? -1)
-                FirebaseManager.shared.firestore.collection("uids").document(broadcast.data["email"] as! String).getDocument { snapshot, error in
-                    if let error = error {
-                        print("Failed to fetch current user: ", error)
-                        return
-                    }
-                    guard let data = snapshot?.data() else { return }
-                    getUserData(uid: data["uid"] as! String) { data in
-                        broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
-                        viewId += 1
+                getUserData(email: broadcast.data["email"] as! String) { data in
+                    broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
+                    viewId += 1
 //                        print(broadcast.data["id"] as? Int ?? -1)
-                        viewGroup.leave()
-                    }
+                    viewGroup.leave()
                 }
+//                print(broadcast.data["id"] as? Int ?? -1)
+//                FirebaseManager.shared.firestore.collection("uids").document(broadcast.data["email"] as! String).getDocument { snapshot, error in
+//                    if let error = error {
+//                        print("Failed to fetch current user: ", error)
+//                        return
+//                    }
+//                    guard let data = snapshot?.data() else { return }
+//
+//                }
             }
             viewGroup.notify(queue: .main) {
                 broadcastViews.sort (by: {

@@ -55,7 +55,7 @@ struct SettingsView: View {
                 Button {
                     givenName = firstName
                     familyName = lastName
-                    storeUserInformation(email: email, givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
+                    storeUserInformation(givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
                 } label: {
                     Text("Save Changes")
                         .padding()
@@ -73,11 +73,11 @@ struct SettingsView: View {
         .padding()
     }
     
-    private func storeUserInformation(email: String, givenName: String, familyName: String, profilePicUrl: URL) {
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-        let userData = ["uid": uid, "email": email, "givenName": givenName, "familyName": familyName, "profilePicUrl": profilePicUrl.absoluteString]
+    private func storeUserInformation(givenName: String, familyName: String, profilePicUrl: URL) {
+        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+        let userData = ["email": email, "givenName": givenName, "familyName": familyName, "profilePicUrl": profilePicUrl.absoluteString]
         FirebaseManager.shared.firestore.collection("users")
-            .document(uid).setData(userData) { err in
+            .document(email).setData(userData) { err in
                 if let err = err {
                     print(err)
                     return
