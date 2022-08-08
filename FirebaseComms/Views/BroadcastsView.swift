@@ -82,7 +82,7 @@ struct BroadcastsView: View {
 //                }
 //                Text("User data: \(vm.dat)")
                 HStack(spacing:16) {
-                    Image(uiImage: UIImage(data: try! Data(contentsOf: profilePicUrl ?? Constants.defaultUrl))!)
+                    Image(uiImage: UIImage(data: try! Data(contentsOf: profilePicUrl ?? constants.defaultUrl))!)
                         .resizable()
                         .clipped()
                         .cornerRadius(16)
@@ -118,7 +118,7 @@ struct BroadcastsView: View {
     
     private func getSentBroadcasts() -> [Broadcast] {
 //        sentBroadcasts = ""
-        let arr: [String] = sentBroadcasts?.components(separatedBy: Constants.seperator) ?? []
+        let arr: [String] = sentBroadcasts?.components(separatedBy: constants.seperator) ?? []
         var loadedSentBroadcasts: [Broadcast] = []
         for str in arr {
             if !str.isEmpty {
@@ -131,24 +131,13 @@ struct BroadcastsView: View {
         return loadedSentBroadcasts
     }
     
-    private func getUserData(email: String, completion: @escaping ([String:Any]) -> ()){
-        FirebaseManager.shared.firestore.collection("users").document(email).getDocument { snapshot, error in
-            if let error = error {
-                print("Failed to fetch current user: ", error)
-                return
-            }
-            guard let data = snapshot?.data() else { return }
-            completion(data)
-        }
-   }
-    
     @State var broadcastViews: [BroadcastView] = []
     func setBroadcastViews() {
         loadedSentBroadcasts = getSentBroadcasts()
         broadcastViews = []
         var viewId = 0
         for broadcast in loadedSentBroadcasts {
-            getUserData(email: broadcast.data["email"] as! String) { data in
+            FirebaseManager.getUserData(email: broadcast.data["email"] as! String) { data in
                 broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
                 viewId += 1
             }
@@ -191,7 +180,7 @@ struct BroadcastsView: View {
             return loadedFollows
         }
 //        print("start")
-        let arr: [String] = follows?.components(separatedBy: Constants.seperator) ?? []
+        let arr: [String] = follows?.components(separatedBy: constants.seperator) ?? []
 //        print("arr: ", arr)
         var loadedFollows: [String] = []
         for str in arr {
@@ -283,7 +272,6 @@ struct BroadcastsView: View {
         }
     }
     
-    private let viewGroup = DispatchGroup()
     func receivedBroadcastViews() {
         getBroadcasts()
 //        print(loadedReceivedBroadcasts.count)
@@ -294,30 +282,32 @@ struct BroadcastsView: View {
 //            })
 //            print(loadedReceivedBroadcasts.description)
             var viewId = 0
-            var broadcastViews: [BroadcastView] = []
-            for broadcast in loadedReceivedBroadcasts {
+            var broadcastViews: [BroadcastView?] = Array(repeating: nil, count: loadedReceivedBroadcasts.count)
+//            var FirebaseManager.seenUsers: [String: [String: Any]] = [:]
+            let viewGroup = DispatchGroup()
+            for i in 0..<loadedReceivedBroadcasts.count{
+//            for broadcast in loadedReceivedBroadcasts {
+                let broadcast = loadedReceivedBroadcasts[i]
                 viewGroup.enter()
-                getUserData(email: broadcast.data["email"] as! String) { data in
-                    broadcastViews.append(BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self))
+                let email = broadcast.data["email"] as! String
+                let data = FirebaseManager.seenUsers[email] ?? [:]
+                if data.isEmpty {
+                    FirebaseManager.getUserData(email: email) { data in
+                        broadcastViews[i] = BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self)
+                        viewId += 1
+                        viewGroup.leave()
+                    }
+                } else {
+                    broadcastViews[i] = BroadcastView(id: viewId, broadcast: broadcast, data: data, from: self)
                     viewId += 1
-//                        print(broadcast.data["id"] as? Int ?? -1)
                     viewGroup.leave()
                 }
-//                print(broadcast.data["id"] as? Int ?? -1)
-//                FirebaseManager.shared.firestore.collection("uids").document(broadcast.data["email"] as! String).getDocument { snapshot, error in
-//                    if let error = error {
-//                        print("Failed to fetch current user: ", error)
-//                        return
-//                    }
-//                    guard let data = snapshot?.data() else { return }
-//
-//                }
             }
             viewGroup.notify(queue: .main) {
                 broadcastViews.sort (by: {
-                    $0.broadcast.data["id"] as? Int ?? -1 > $1.broadcast.data["id"] as? Int ?? -1
+                    $0!.broadcast.data["id"] as? Int ?? -1 > $1!.broadcast.data["id"] as? Int ?? -1
                 })
-                self.broadcastViews = broadcastViews
+                self.broadcastViews = broadcastViews as! [BroadcastView]
             }
 
         }

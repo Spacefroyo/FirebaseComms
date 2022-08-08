@@ -23,7 +23,7 @@ struct BroadcastView: View, Identifiable {
         } label: {
             VStack {
                 HStack(spacing:16) {
-                    Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: data["profilePicUrl"] as? String ?? Constants.defaultUrlString)!))!)
+                    Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: data["profilePicUrl"] as? String ?? constants.defaultUrlString)!))!)
                         .resizable()
                         .clipped()
                         .frame(width: 32, height: 32)
@@ -47,7 +47,7 @@ struct BroadcastView: View, Identifiable {
                         Circle()
                             .foregroundColor(.red)
                             .frame(width:12, height:12)
-                        Text(timeSince(timestamp:broadcast.data["timestamp"] as? Timestamp ?? Timestamp()))
+                        Text(utils.timeSince(timestamp:broadcast.data["timestamp"] as? Timestamp ?? Timestamp()))
                             .font(.system(size:14, weight:.semibold))
                             .foregroundColor(Color.black)
                             .padding(.trailing)
@@ -65,21 +65,6 @@ struct BroadcastView: View, Identifiable {
             }
             
             ExpandedBroadcastView(id: id, broadcast: broadcast, from: self)
-        }
-    }
-    
-    func timeSince(timestamp: Timestamp) -> String {
-        let diff = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: timestamp.dateValue(), to: Timestamp().dateValue())
-        if diff.year ?? 0 > 0 {
-            return "\(diff.year ?? 0)y"
-        } else if diff.month ?? 0 > 0 {
-            return "\(diff.month ?? 0)mon"
-        } else if diff.day ?? 0 > 0 {
-            return "\(diff.day ?? 0)d"
-        } else if diff.hour ?? 0 > 0 {
-            return "\(diff.hour ?? 0)h"
-        } else {
-            return "\(diff.minute ?? 0)min"
         }
     }
 }

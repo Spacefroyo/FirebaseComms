@@ -61,7 +61,7 @@ struct LoginView: View {
     @AppStorage("email") var email = ""
     @AppStorage("givenName") var givenName = ""
     @AppStorage("familyName") var familyName = ""
-    @AppStorage("profilePicUrl") var profilePicUrl = Constants.defaultUrl
+    @AppStorage("profilePicUrl") var profilePicUrl = constants.defaultUrl
     
     func handleLogin() {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
@@ -90,7 +90,7 @@ struct LoginView: View {
             givenName = user?.profile?.givenName ?? ""
             familyName = user?.profile?.familyName ?? ""
 
-            profilePicUrl = user?.profile?.imageURL(withDimension: 320) ?? Constants.defaultUrl
+            profilePicUrl = user?.profile?.imageURL(withDimension: 320) ?? constants.defaultUrl
             
               let credential = GoogleAuthProvider.credential(withIDToken: idToken,
                                                              accessToken: authentication.accessToken)

@@ -67,64 +67,117 @@ struct ExpandedBroadcastView: View, Identifiable {
                         TextField("Add Public Comment", text: $publicComment)
                         
                         Button {
-                            changeComment(comment: Comment(data: ["id": cid]))
+                            makeComment(_public: true)
                         } label: {
                             Image(systemName: "arrow.right")
+                        }
+                        .disabled(publicComment.isEmpty)
+                    }
+                    
+                    Divider()
+                    
+//                    ForEach(commentData, commentUserData, id: \.self) { i in
+                    Text(String(commentData.count))
+                    ScrollView {
+                        ForEach(0..<commentData.count, id: \.self) { i in
+    //                    for i in 0..<commentData.count {
+                            let comment = commentData[i]
+                            let data = commentUserData[i]
+                            VStack {
+                                HStack(spacing:16) {
+                                    Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: data["profilePicUrl"] as? String ?? constants.defaultUrlString)!))!)
+                                        .resizable()
+                                        .clipped()
+                                        .frame(width: 32, height: 32)
+                                        .cornerRadius(16)
+                    //                    .padding(8)
+                                        .overlay(RoundedRectangle(cornerRadius: 16)
+                                            .stroke(Color.black, lineWidth: 1))
+                                        .padding(.leading)
+                    //                        .frame(width: 32, height: 32))
+                                    VStack(alignment:.leading){
+                                        HStack(alignment:.center) {
+                                            Text("\(data["givenName"] as? String ?? "Anon") \(data["familyName"] as? String ?? "Anon")")
+                                                .font(.system(size:16, weight:.semibold))
+                                                .foregroundColor(Color.black)
+                                            Text("\(utils.getDateFormat(format: "mdy").string(from: (comment.data["Timestamp"] as? Timestamp ?? Timestamp()).dateValue()))")
+                                                .font(.system(size:12))
+                                                .foregroundColor(Color(.lightGray))
+                                        }
+                                        Text(comment.data["name"] as? String ?? "Unknown Content")
+                                            .font(.system(size:14))
+                                            .foregroundColor(Color.black)
+                                    }
+    //                                Spacer()
+    //
+    //                                HStack{
+    //                                    Circle()
+    //                                        .foregroundColor(.red)
+    //                                        .frame(width:12, height:12)
+    //                                    Text(utils.timeSince(timestamp:comment.data["timestamp"] as? Timestamp ?? Timestamp()))
+    //                                        .font(.system(size:14, weight:.semibold))
+    //                                        .foregroundColor(Color.black)
+    //                                        .padding(.trailing)
+    //                                }
+                                }
+                                Divider()
+                                    .padding(.vertical, 8)
+                            }
                         }
                     }
                     
                     Spacer()
                 }
                 
-                Divider()
-                
-                VStack {
-                    TextField("Add Private Comment", text: $privateComment)
-                    
-                    Spacer()
-                }
+//                Divider()
+//
+//                VStack {
+//                    TextField("Add Private Comment", text: $privateComment)
+//
+//                    Spacer()
+//                }
             }
         }
+        .onAppear(perform: getComments)
     }
     
-    private func storeCommentInformation(name: String, public: Bool) {
-//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
+    //essentially id is always defined but cid isn't so do something about it
+    //maybe have it be fetched when you click on the comment?
+    
+    private func makeComment(_public: Bool) {
+        let name = _public ? publicComment : privateComment
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
-        if name != "" {
-            let announcement = Broadcast(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp()] as [String: Any])
-//            changeBroadcast(broadcast: announcement)
-            FirebaseManager.shared.firestore.collection("broadcasts")
-                .document(email).collection("sent").document("\(cid)").setData(announcement.data) { err in
+        let emailB = broadcast.data["email"] as? String ?? ""
+        let id = broadcast.data["id"] as? Int ?? -1
+        fetchId()
+        group.notify(queue: .main) {
+            let comment = Comment(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp(), "public": _public] as [String: Any])
+            commentData.append(comment)
+            commentUserData.append(FirebaseManager.shared.data)
+            FirebaseManager.shared.firestore
+                .collection("broadcasts")
+                .document(emailB)
+                .collection("sent")
+                .document("\(id)")
+                .collection("comments")
+                .document("\(cid)")
+                .setData(comment.data) { err in
                     if let err = err {
                         print(err)
                         return
                     }
                 }
-        } else {
-            fetchId()
-            group.notify(queue: .main) {
-                let announcement = Broadcast(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp()] as [String: Any])
-                storeBroadcast(broadcast: announcement)
-                FirebaseManager.shared.firestore.collection("broadcasts")
-                    .document(email).collection("sent").document("\(cid)").setData(announcement.data) { err in
-                        if let err = err {
-                            print(err)
-                            return
-                        }
-                    }
-            }
         }
     }
     
     private let group = DispatchGroup()
     private func fetchId(){
+        print("Fetch")
         group.enter()
         DispatchQueue.main.async {
-//            if id != -1 {
-//                group.leave()
-//                return
-//            }
-            let document = FirebaseManager.shared.firestore.collection("data").document("commentId")
+            let document = FirebaseManager.shared.firestore
+                .collection("data")
+                .document("commentId")
             document.getDocument { snapshot, error in
                 if let error = error {
                     print("Failed to fetch commentId document: ", error)
@@ -133,6 +186,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                 
                 guard let data = snapshot?.data() else {return}
                 cid = data["id"] as? Int ?? 0
+                print("Fetched ", cid)
                 document.setData(["id": cid+1]) { err in
                     if let err = err {
                         print(err)
@@ -145,40 +199,74 @@ struct ExpandedBroadcastView: View, Identifiable {
         }
     }
     
-    @AppStorage("sentBroadcasts") var sentBroadcasts: String?
-    private func storeBroadcast(broadcast: Broadcast) {
-        sentBroadcasts = "\(broadcast.toString())~\(sentBroadcasts ?? "")"
-    }
-    
-    private func changeComment(comment: Comment) {
-        let arr: [String] = sentBroadcasts?.components(separatedBy: Constants.seperator) ?? []
-        var loadedSentBroadcasts: [Broadcast] = []
-        for str in arr {
-            if !str.isEmpty {
-                let thisBroadcast: Broadcast = Broadcast(str: str)
-                if thisBroadcast.data["id"] as? Int ?? -1 == broadcast.data["id"] as? Int ?? -1 {
-                    if broadcast.data.count != 1 {
-                        loadedSentBroadcasts.append(broadcast)
+    @State var commentData: [Comment] = []
+    @State var commentUserData: [[String: Any?]] = []
+    func getComments() {
+        
+        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+        let emailB = broadcast.data["email"] as? String ?? ""
+        let id = broadcast.data["id"] as? Int ?? -1
+        FirebaseManager.shared.firestore
+            .collection("broadcasts")
+            .document(emailB)
+            .collection("sent")
+            .document("\(id)")
+            .collection("comments")
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
+                var commentData: [Comment] = []
+                for document in documents {
+                    let data = document.data()
+                    if (data["public"] as? Bool ?? false) || (data["email"] as? String ?? "") == email || (data["email"] as? String ?? "") == emailB {
+                        commentData.append(Comment(data: document.data()))
+                        
                     }
-                } else {
-                    loadedSentBroadcasts.append(thisBroadcast)
+                }
+                
+                let commentGroup = DispatchGroup()
+//                var FirebaseManager.seenUsers: [String: [String: Any]] = [:]
+                var commentUserData: [[String: Any?]?] = Array(repeating: nil, count: commentData.count)
+                for i in 0..<commentData.count {
+//                for comment in commentData {
+                    let comment = commentData[i]
+                    commentGroup.enter()
+                    let email = comment.data["email"] as! String
+                    let data = FirebaseManager.seenUsers[email] ?? [:]
+                    if data.isEmpty {
+                        FirebaseManager.getUserData(email: email) { data in
+                            commentUserData[i] = data
+//                            viewId += 1
+                            commentGroup.leave()
+                        }
+                    } else {
+                        commentUserData[i] = data
+//                        viewId += 1
+                        commentGroup.leave()
+                    }
+                }
+                commentGroup.notify(queue: .main) {
+                    self.commentData = commentData
+                    self.commentUserData = commentUserData as! [[String: Any?]]
                 }
             }
-        }
-        if broadcast.data.count == 1 {
-            deleteBroadcast(broadcast: broadcast)
-        }
-//        loadedSentBroadcasts[broadcast.data["id"] as? Int ?? 0] = broadcast
-        sentBroadcasts = ""
-        for broadcast in loadedSentBroadcasts {
-            storeBroadcast(broadcast: broadcast)
-        }
     }
     
-    func deleteBroadcast(broadcast: Broadcast) {
-        let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
-        FirebaseManager.shared.firestore.collection("broadcasts")
-            .document(email).collection("sent").document("\(id)").delete() { err in
+    func deleteComment(comment: Comment) {
+//        let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
+        let emailB = broadcast.data["email"] as? String ?? ""
+        let id = broadcast.data["id"] as? Int ?? -1
+        FirebaseManager.shared.firestore
+            .collection("broadcasts")
+            .document(emailB)
+            .collection("sent")
+            .document("\(id)")
+            .collection("comments")
+            .document("\(cid)").delete() { err in
                 if let err = err {
                     print(err)
                     return

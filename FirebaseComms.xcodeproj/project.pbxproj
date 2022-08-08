@@ -25,10 +25,11 @@
 		AC51FB0F2853F284007411A5 /* BroadcastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC51FB0E2853F284007411A5 /* BroadcastView.swift */; };
 		AC75F69B288E0E68007E321B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC75F69A288E0E67007E321B /* GoogleService-Info.plist */; };
 		AC99A296285507C7005FA788 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A295285507C7005FA788 /* User.swift */; };
-		AC99A29828550A7E005FA788 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29728550A7E005FA788 /* Constants.swift */; };
+		AC99A29828550A7E005FA788 /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29728550A7E005FA788 /* constants.swift */; };
 		AC99A29A28550E55005FA788 /* ExpandedBroadcastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */; };
 		AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29D285668F7005FA788 /* NewFollowView.swift */; };
 		ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02B92894A9030071C9B5 /* Comment.swift */; };
+		ACBA02BC289F27E50071C9B5 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02BB289F27E50071C9B5 /* utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,10 +49,11 @@
 		AC51FB0E2853F284007411A5 /* BroadcastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastView.swift; sourceTree = "<group>"; };
 		AC75F69A288E0E67007E321B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AC99A295285507C7005FA788 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		AC99A29728550A7E005FA788 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		AC99A29728550A7E005FA788 /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedBroadcastView.swift; sourceTree = "<group>"; };
 		AC99A29D285668F7005FA788 /* NewFollowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFollowView.swift; sourceTree = "<group>"; };
 		ACBA02B92894A9030071C9B5 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		ACBA02BB289F27E50071C9B5 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +98,8 @@
 				AC51FADB284E64B0007411A5 /* FirebaseCommsApp.swift */,
 				AC51FADF284E64B1007411A5 /* Assets.xcassets */,
 				AC51FAE1284E64B1007411A5 /* Preview Content */,
-				AC99A29728550A7E005FA788 /* Constants.swift */,
+				AC99A29728550A7E005FA788 /* constants.swift */,
+				ACBA02BB289F27E50071C9B5 /* utils.swift */,
 			);
 			path = FirebaseComms;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 				AC51FB072853B209007411A5 /* FirebaseManager.swift in Sources */,
 				AC51FADE284E64B0007411A5 /* ContentView.swift in Sources */,
 				AC51FAF3284E7C7D007411A5 /* LoginView.swift in Sources */,
+				ACBA02BC289F27E50071C9B5 /* utils.swift in Sources */,
 				AC51FB0D2853C53A007411A5 /* TestView.swift in Sources */,
 				AC51FADC284E64B0007411A5 /* FirebaseCommsApp.swift in Sources */,
 				AC51FB0F2853F284007411A5 /* BroadcastView.swift in Sources */,
@@ -239,7 +243,7 @@
 				AC51FAFD284E9C1D007411A5 /* BroadcastsView.swift in Sources */,
 				AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */,
 				AC99A296285507C7005FA788 /* User.swift in Sources */,
-				AC99A29828550A7E005FA788 /* Constants.swift in Sources */,
+				AC99A29828550A7E005FA788 /* constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
