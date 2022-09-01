@@ -31,7 +31,6 @@ class Comment {
         ret["email"] = strData["email"]
         ret["id"] = Int(strData["id"] ?? "")
         ret["name"] = strData["name"]
-        ret["public"] = Bool(strData["public"] ?? "false")
         let arr = strData["timestamp"]?.components(separatedBy: ";")
         ret["timestamp"] = Timestamp(seconds: Int64(arr?[0] ?? "") ?? 0, nanoseconds: Int32(arr?[1] ?? "") ?? 0)
         return ret

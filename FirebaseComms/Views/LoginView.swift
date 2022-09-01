@@ -17,45 +17,51 @@ struct LoginView: View {
     @AppStorage("log_Status") var log_Status = false
     
     var body: some View {
-        Button {
-            handleLogin()
-        } label: {
-            HStack(spacing: 15) {
-                Image("google")
-                    .resizable()
-                    .renderingMode(.template)
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 28, height: 28)
-                
-                Text("Login with Google")
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .kerning(1.1)
-            }
-//            .foregroundColor(Color("Blue"))
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(
-                Capsule()
-                    .strokeBorder(.blue)
-                    .frame(width:300)
-            )
-        }
-        .overlay(
-            ZStack{
-                if isLoading{
-                    Color.black
-                        .opacity(0.25)
-                        .ignoresSafeArea()
+        ZStack {
+            Color.theme.background
+                .ignoresSafeArea()
+            Button {
+                handleLogin()
+            } label: {
+                HStack(spacing: 15) {
+                    Image("google")
+                        .resizable()
+                        .renderingMode(.template)
+    //                    .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 28, height: 28)
                     
-                    ProgressView()
-                        .font(.title2)
-                        .frame(width: 60, height: 60)
-                        .background(.white)
-                        .cornerRadius(10)
+                    Text("Login with Google")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .kerning(1.1)
+                        .foregroundColor(Color.theme.accent)
                 }
+    //            .foregroundColor(Color("Blue"))
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(
+                    Capsule()
+                        .strokeBorder(Color.theme.accent)
+                        .frame(width:300)
+                )
             }
+            .overlay(
+                ZStack{
+                    if isLoading{
+                        Color.black
+                            .opacity(0.25)
+                            .ignoresSafeArea()
+                        
+                        ProgressView()
+                            .font(.title2)
+                            .frame(width: 60, height: 60)
+                            .background(Color.theme.background)
+                            .cornerRadius(10)
+                    }
+                }
         )
+        }
     }
     
     @AppStorage("email") var email = ""
@@ -127,14 +133,13 @@ struct LoginView: View {
 //                        }
 //                    }
                 
-                loadFollows(email: email)
-                loadSentBroadcasts(email: email)
+//                loadFollows(email: email)
+//                loadSentBroadcasts(email: email)
 //                print("logged in")
                 withAnimation{
                     log_Status = true
                 }
             }
-            print(log_Status)
         }
         
     }
@@ -151,67 +156,53 @@ struct LoginView: View {
             }
     }
     
-    @AppStorage("receivedBroadcasts") var receivedBroadcasts: String?
-    func loadReceivedBroadcasts() {
-        receivedBroadcasts = ""
-        for follow in loadedFollows {
-            FirebaseManager.shared.firestore
-                .collection("broadcasts")
-                .document(follow)
-                .collection("sent")
-                .getDocuments { snapshot, error in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    
-                    let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
-                    
-                    for document in documents {
-                        receivedBroadcasts = "\(Broadcast(data: document.data()).toString())~\(receivedBroadcasts ?? "")"
-                    }
-                }
-        }
-    }
+//    @AppStorage("receivedBroadcasts") var receivedBroadcasts: String?
+//    func loadReceivedBroadcasts() {
+//        receivedBroadcasts = ""
+//        for follow in loadedFollows {
+//            FirebaseManager.shared.firestore
+//                .collection("broadcasts")
+//                .document(follow)
+//                .collection("sent")
+//                .getDocuments { snapshot, error in
+//                    if let error = error {
+//                        print(error)
+//                        return
+//                    }
+//
+//                    let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
+//
+//                    for document in documents {
+//                        receivedBroadcasts = "\(Broadcast(data: document.data()).toString())~\(receivedBroadcasts ?? "")"
+//                    }
+//                }
+//        }
+//    }
     
-    @AppStorage("follows") var follows: String?
-    @State var loadedFollows: [String] = []
-    func loadFollows(email: String) {
-        follows = ""
-        FirebaseManager.shared.firestore.collection("follows").document(email).getDocument { snapshot, error in
-            if let error = error {
-                print("Failed to fetch current user: ", error)
-                return
-            }
-            guard let data = snapshot?.data() else {return}
-            loadedFollows = data["follows"] as? [String] ?? []
-            for follow in loadedFollows {
-                follows = "\(follow)~\(follows ?? "")"
-            }
-            loadReceivedBroadcasts()
-        }
-    }
+//    @AppStorage("follows") var follows: String?
+//    @State var loadedFollows: [String] = []
+//
     
-    @AppStorage("sentBroadcasts") var sentBroadcasts: String?
-    func loadSentBroadcasts(email: String) {
-        sentBroadcasts = ""
-        FirebaseManager.shared.firestore
-            .collection("broadcasts")
-            .document(email)
-            .collection("sent")
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    print(error)
-                    return
-                }
-                
-                let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
-                
-                for document in documents {
-                    sentBroadcasts = "\(Broadcast(data: document.data()).toString())~\(sentBroadcasts ?? "")"
-                }
-            }
-    }
+//    @AppStorage("sentBroadcasts") var sentBroadcasts: String?
+//    func loadSentBroadcasts(email: String) {
+//        sentBroadcasts = ""
+//        FirebaseManager.shared.firestore
+//            .collection("broadcasts")
+//            .document(email)
+//            .collection("sent")
+//            .getDocuments { snapshot, error in
+//                if let error = error {
+//                    print(error)
+//                    return
+//                }
+//
+//                let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
+//
+//                for document in documents {
+//                    sentBroadcasts = "\(Broadcast(data: document.data()).toString())~\(sentBroadcasts ?? "")"
+//                }
+//            }
+//    }
 }
 
 struct LoginView_Previews: PreviewProvider {

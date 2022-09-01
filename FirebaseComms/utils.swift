@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import SwiftUI
 
 struct utils {
     static func timeSince(timestamp: Timestamp) -> String {
@@ -23,18 +24,28 @@ struct utils {
             return "\(diff.minute ?? 0)min"
         }
     }
-    static let dateFormatters: [String: DateFormatter] = ["mdy": DateFormatter().setFormat()]
+    static let dateFormatters: [String: DateFormatter] = ["mdy": DateFormatter().setFormat(), "mdytz": DateFormatter().setFormat(dateFormat:"MMM dd, yyyy, HH:mm z")]
     static func getDateFormat(format: String) -> DateFormatter {
         return dateFormatters[format, default: DateFormatter().setFormat()]
     }
-//    static {
-//        dateFormatter.locale = Locale(identifier: "en_US")
-//    }
-}
 
-//class CustomDateFormatter(super:DateFormatter) {
-//
-//}
+    static func broadcastType(broadcast: Broadcast) -> String {
+        if (broadcast.data.count == 4) {
+            return "announcement"
+        } else {
+            return "event"
+        }
+    }
+    
+    static func stringsInOrder(a: [Any??], b: [Any??]) -> Bool {
+        for i in 0...a.count-1 {
+            if (a[i] as? String ?? "").compare(b[i] as? String ?? "") != .orderedSame {
+                return (a[i] as? String ?? "").compare(b[i] as? String ?? "") == .orderedAscending
+            }
+        }
+        return true
+    }
+}
 
 extension DateFormatter {
     func setFormat(locale: String = "en_US", dateFormat: String = "MMM dd, yyyy") -> DateFormatter {

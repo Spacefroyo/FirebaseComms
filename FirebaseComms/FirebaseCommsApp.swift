@@ -10,6 +10,37 @@ import Firebase
 import FirebaseFirestore
 import GoogleSignIn
 
+class Theme {
+    static func navigationBarColors(background : UIColor?,
+       titleColor : UIColor? = nil, tintColor : UIColor? = nil ){
+        
+        let navigationAppearance = UINavigationBarAppearance()
+        navigationAppearance.configureWithOpaqueBackground()
+        navigationAppearance.backgroundColor = background ?? .clear
+        
+        navigationAppearance.titleTextAttributes = [.foregroundColor: titleColor ?? .black]
+        navigationAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor ?? .black]
+       
+        UINavigationBar.appearance().standardAppearance = navigationAppearance
+        UINavigationBar.appearance().compactAppearance = navigationAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navigationAppearance
+
+        UINavigationBar.appearance().tintColor = tintColor ?? titleColor ?? .black
+        
+        UISegmentedControl.appearance().selectedSegmentTintColor = tintColor
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: titleColor!], for: .selected)
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: titleColor!], for: .normal)
+//        UISegmentedControl.appearance().
+        
+        UITextField.appearance().textColor = titleColor
+        UITextView.appearance().backgroundColor = .clear
+//        UIDatePicker.appearance().tintColor = titleColor
+//        UIDatePicker.appearance().backgroundColor = background
+//        UIDatePicker.appearance().isOpaque = false
+
+    }
+}
+
 @main
 struct FirebaseCommsApp: App {
     @AppStorage("view_Id") var view_Id = 0
@@ -18,7 +49,11 @@ struct FirebaseCommsApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear(perform: {view_Id = 0})
+                .onAppear(perform: {
+                    view_Id = 0
+                    Theme.navigationBarColors(background: UIColor(Color.theme.background), titleColor: UIColor(Color.theme.foreground), tintColor: UIColor(Color.theme.accent))
+                })
+                .preferredColorScheme(.dark)
         }
     }
 //    var displayEvent: Bool = true

@@ -21,7 +21,7 @@ struct BroadcastView: View, Identifiable {
         Button {
             expand = true
         } label: {
-            VStack {
+            VStack(alignment: .leading) {
                 HStack(spacing:16) {
                     Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: data["profilePicUrl"] as? String ?? constants.defaultUrlString)!))!)
                         .resizable()
@@ -31,46 +31,78 @@ struct BroadcastView: View, Identifiable {
     //                    .padding(8)
                         .overlay(RoundedRectangle(cornerRadius: 16)
                             .stroke(Color.black, lineWidth: 1))
-                        .padding(.leading)
+//                        .padding(.leading)
     //                        .frame(width: 32, height: 32))
                     VStack(alignment:.leading){
-                        Text(broadcast.data["name"] as? String ?? "Unknown Content")
-                            .font(.system(size:16, weight:.bold))
-                            .foregroundColor(Color.black)
                         Text("\(data["givenName"] as? String ?? "Anon") \(data["familyName"] as? String ?? "Anon")")
+                            .font(.system(size:16, weight:.bold))
+                            .foregroundColor(Color.theme.foreground)
+                        Text(utils.timeSince(timestamp:broadcast.data["timestamp"] as? Timestamp ?? Timestamp()))
                             .font(.system(size:14))
-                            .foregroundColor(Color(.lightGray))
+                            .foregroundColor(Color.theme.accent)
                     }
                     Spacer()
                     
-                    HStack{
-                        Circle()
-                            .foregroundColor(.red)
-                            .frame(width:12, height:12)
-                        Text(utils.timeSince(timestamp:broadcast.data["timestamp"] as? Timestamp ?? Timestamp()))
-                            .font(.system(size:14, weight:.semibold))
-                            .foregroundColor(Color.black)
-                            .padding(.trailing)
-                    }
+                    Circle()
+                        .foregroundColor(.red)
+                        .frame(width:12, height:12)
+                            
+//                        Text()
+//                            .font(.system(size:14, weight:.semibold))
+//                            .foregroundColor(Color.theme.foreground)
+                    
+//                    .padding(.trailing)
                 }
+                .padding([.leading, .trailing])
+                .padding([.top, .bottom], 8)
+                
+                switch utils.broadcastType(broadcast: broadcast) {
+                case "announcement":
+                    Text(broadcast.data["name"] as? String ?? "Unknown Content")
+                        .font(.system(size:16, weight:.regular))
+                        .foregroundColor(Color.theme.foreground)
+                        .padding([.leading, .trailing, .bottom])
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(5)
+                case "event":
+                    Text("Event: \(broadcast.data["name"] as? String ?? "Unknown Content")")
+                        .font(.system(size:24, weight:.bold))
+                        .foregroundColor(Color.theme.foreground)
+                        .padding([.leading, .trailing, .bottom])
+                        .lineLimit(1)
+                default:
+                    Text("Unrecognized broadcast type")
+                        .font(.system(size:24, weight:.bold))
+                        .foregroundColor(Color.red)
+                        .padding([.leading, .trailing, .bottom])
+                }
+                
+                    
+                
                 Divider()
-                    .padding(.vertical, 8)
+//                    .padding(.bottom, 8)
             }
+//            .frame(alignment: .leading)
         }
         .fullScreenCover(isPresented: $expand) {
-            Button {
-                expand = false
-            } label: {
-                Text("< Back")
-            }
+//            Button {
+//                expand = false
+//            } label: {
+//                Text("< Back")
+//            }
             
             ExpandedBroadcastView(id: id, broadcast: broadcast, from: self)
         }
     }
 }
 
-//struct BroadcastView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        BroadcastView()
-//    }
-//}
+struct BroadcastView_Previews: PreviewProvider {
+    static var displayEvent: Bool = false
+    static var previews: some View {
+        if displayEvent {
+            BroadcastView(id: -1, broadcast: Broadcast(data: ["email": "", "name": "testEvent", "id": -1, "timestamp": Timestamp(), "description": "testEvent description goes something like this. blah blah blah blah blah", "startDate": Date(), "endDate": Date(), "location": "testLocation"]), data: ["email": "email", "givenName": "first", "familyName": "last", "profilePicUrl": constants.defaultUrlString]).preferredColorScheme(.dark).background(Color.theme.background)
+        } else {
+            BroadcastView(id: -1, broadcast: Broadcast(data: ["email": "", "name": "testAnnouncement goes something like this. blah blah blah blah blah", "id": -1, "timestamp": Timestamp()]), data: ["email": "email", "givenName": "first", "familyName": "last", "profilePicUrl": constants.defaultUrlString]).preferredColorScheme(.dark)
+        }
+    }
+}
