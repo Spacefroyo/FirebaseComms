@@ -25,14 +25,15 @@
 		AC75F69B288E0E68007E321B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AC75F69A288E0E67007E321B /* GoogleService-Info.plist */; };
 		AC99A29828550A7E005FA788 /* constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29728550A7E005FA788 /* constants.swift */; };
 		AC99A29A28550E55005FA788 /* ExpandedBroadcastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */; };
-		AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29D285668F7005FA788 /* NewFollowView.swift */; };
+		AC99A29E285668F7005FA788 /* FollowsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC99A29D285668F7005FA788 /* FollowsView.swift */; };
 		ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02B92894A9030071C9B5 /* Comment.swift */; };
 		ACBA02BC289F27E50071C9B5 /* utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02BB289F27E50071C9B5 /* utils.swift */; };
 		ACBA02BE28A59BFC0071C9B5 /* CalendarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02BD28A59BFC0071C9B5 /* CalendarManager.swift */; };
 		ACBA02C028B6B71D0071C9B5 /* color.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02BF28B6B71D0071C9B5 /* color.swift */; };
 		ACBA02C228BD7CF20071C9B5 /* BackButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C128BD7CF20071C9B5 /* BackButtonView.swift */; };
 		ACBA02C428BED2DC0071C9B5 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */; };
-		ACBA02C628BED9F70071C9B5 /* AttendanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C528BED9F70071C9B5 /* AttendanceView.swift */; };
+		ACBA02C628BED9F70071C9B5 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C528BED9F70071C9B5 /* UserListView.swift */; };
+		ACBA02C828C13C820071C9B5 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C728C13C820071C9B5 /* TestView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,14 +53,15 @@
 		AC75F69A288E0E67007E321B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AC99A29728550A7E005FA788 /* constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = constants.swift; sourceTree = "<group>"; };
 		AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedBroadcastView.swift; sourceTree = "<group>"; };
-		AC99A29D285668F7005FA788 /* NewFollowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFollowView.swift; sourceTree = "<group>"; };
+		AC99A29D285668F7005FA788 /* FollowsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FollowsView.swift; sourceTree = "<group>"; };
 		ACBA02B92894A9030071C9B5 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		ACBA02BB289F27E50071C9B5 /* utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utils.swift; sourceTree = "<group>"; };
 		ACBA02BD28A59BFC0071C9B5 /* CalendarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarManager.swift; sourceTree = "<group>"; };
 		ACBA02BF28B6B71D0071C9B5 /* color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = color.swift; sourceTree = "<group>"; };
 		ACBA02C128BD7CF20071C9B5 /* BackButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackButtonView.swift; sourceTree = "<group>"; };
 		ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
-		ACBA02C528BED9F70071C9B5 /* AttendanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttendanceView.swift; sourceTree = "<group>"; };
+		ACBA02C528BED9F70071C9B5 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
+		ACBA02C728C13C820071C9B5 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,10 +138,11 @@
 				AC51FB0428500947007411A5 /* NewBroadcastView.swift */,
 				AC51FB0E2853F284007411A5 /* BroadcastView.swift */,
 				AC99A29928550E55005FA788 /* ExpandedBroadcastView.swift */,
-				AC99A29D285668F7005FA788 /* NewFollowView.swift */,
+				AC99A29D285668F7005FA788 /* FollowsView.swift */,
 				ACBA02C128BD7CF20071C9B5 /* BackButtonView.swift */,
 				ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */,
-				ACBA02C528BED9F70071C9B5 /* AttendanceView.swift */,
+				ACBA02C528BED9F70071C9B5 /* UserListView.swift */,
+				ACBA02C728C13C820071C9B5 /* TestView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -250,9 +253,10 @@
 				AC51FB0F2853F284007411A5 /* BroadcastView.swift in Sources */,
 				ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */,
 				AC51FAFD284E9C1D007411A5 /* BroadcastsView.swift in Sources */,
-				AC99A29E285668F7005FA788 /* NewFollowView.swift in Sources */,
-				ACBA02C628BED9F70071C9B5 /* AttendanceView.swift in Sources */,
+				AC99A29E285668F7005FA788 /* FollowsView.swift in Sources */,
+				ACBA02C628BED9F70071C9B5 /* UserListView.swift in Sources */,
 				ACBA02C028B6B71D0071C9B5 /* color.swift in Sources */,
+				ACBA02C828C13C820071C9B5 /* TestView.swift in Sources */,
 				ACBA02C228BD7CF20071C9B5 /* BackButtonView.swift in Sources */,
 				AC99A29828550A7E005FA788 /* constants.swift in Sources */,
 				ACBA02BE28A59BFC0071C9B5 /* CalendarManager.swift in Sources */,

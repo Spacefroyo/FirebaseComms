@@ -16,6 +16,7 @@ struct BroadcastView: View, Identifiable {
     var data: [String: Any] //user data
     @State var expand: Bool = false
     @State var from: BroadcastsView? = nil
+    @State var read: Bool = true
     
     var body: some View {
         Button {
@@ -43,9 +44,11 @@ struct BroadcastView: View, Identifiable {
                     }
                     Spacer()
                     
-                    Circle()
-                        .foregroundColor(.red)
-                        .frame(width:12, height:12)
+                    if !read {
+                        Circle()
+                            .foregroundColor(.red)
+                            .frame(width:12, height:12)
+                    }
                             
 //                        Text()
 //                            .font(.system(size:14, weight:.semibold))
@@ -92,6 +95,85 @@ struct BroadcastView: View, Identifiable {
 //            }
             
             ExpandedBroadcastView(id: id, broadcast: broadcast, from: self)
+                .onAppear(perform: updateRead)
+                .onDisappear {
+                    updateRead()
+                    isRead()
+                }
+        }
+        .onAppear(perform: isRead)
+    }
+    
+    private func isRead() {
+        if broadcast.data["email"] as? String ?? "" != FirebaseManager.shared.auth.currentUser?.email ?? "" {
+            FirebaseManager.shared.firestore
+                .collection("broadcasts")
+                .document(broadcast.data["email"] as? String ?? "")
+                .collection("sent")
+                .document("\(broadcast.data["id"] as? Int ?? -1)")
+                .collection("privateChannels")
+                .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
+                .getDocument { snapshot, error in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    read = snapshot?.data()?["commentsReadByReceiver"] as? Bool ?? false && snapshot?.data()?["read"] as? Bool ?? false
+                }
+        } else {
+            read = true
+            FirebaseManager.shared.firestore.collection("connections").document(FirebaseManager.shared.auth.currentUser?.email ?? "").getDocument { snapshot, error in
+                if let error = error {
+                    print("Failed to fetch current user: ", error)
+                    return
+                }
+                let followers = snapshot?.data()?["followers"] as? [String] ?? []
+                for follower in followers {
+                    FirebaseManager.shared.firestore
+                        .collection("broadcasts")
+                        .document(broadcast.data["email"] as? String ?? "")
+                        .collection("sent")
+                        .document("\(broadcast.data["id"] as? Int ?? -1)")
+                        .collection("privateChannels")
+                        .document(follower)
+                        .getDocument { snapshot, error in
+                            if let error = error {
+                                print(error)
+                                return
+                            }
+                            read = snapshot?.data()?["commentsReadBySender"] as? Bool ?? false && read
+                        }
+                }
+            }
+        }
+    }
+    
+    private func updateRead() {
+        if broadcast.data["email"] as? String ?? "" != FirebaseManager.shared.auth.currentUser?.email ?? "" {
+            FirebaseManager.shared.firestore
+                .collection("broadcasts")
+                .document(broadcast.data["email"] as? String ?? "")
+                .collection("sent")
+                .document("\(broadcast.data["id"] as? Int ?? -1)")
+                .collection("privateChannels")
+                .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
+                .getDocument { snapshot, error in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    read = snapshot?.data()?["commentsReadByReceiver"] as? Bool ?? false
+                }
+            FirebaseManager.shared.firestore
+                .collection("broadcasts")
+                .document(broadcast.data["email"] as? String ?? "")
+                .collection("sent")
+                .document("\(broadcast.data["id"] as? Int ?? -1)")
+                .collection("privateChannels")
+                .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
+                .setData(["read": true], merge: true)
+        } else {
+            read = true
         }
     }
 }

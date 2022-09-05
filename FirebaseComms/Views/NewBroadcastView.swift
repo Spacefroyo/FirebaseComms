@@ -20,6 +20,7 @@ struct NewBroadcastView: View {
     @AppStorage("view_Id") var view_Id = 2
     @State var from: ExpandedBroadcastView? = nil
     @Environment(\.dismiss) private var dismiss
+    @State var posted: Bool = false
     
     var body: some View {
         NavigationView {
@@ -66,13 +67,15 @@ struct NewBroadcastView: View {
                     if id != -1 {
                         Button {
                             changeBroadcast(broadcast: Broadcast(data: ["id": id]))
-                            from?.expand = false
-                            from?.from?.expand = false
+                            from?.posted = true
+                            self.dismiss()
+//                            from?.from?.expand = false
     //                        group.notify(queue: .main) {
     //                            from?.from?.from?.setBroadcastViews()
     //                        }
                         } label: {
                             Text("Delete")
+                                .foregroundColor(Color.red)
                         }
                     }
                 }
@@ -122,7 +125,8 @@ struct NewBroadcastView: View {
             Button {
                 storeBroadcastInformation(name: name)
                 if id != -1 {
-                    dismiss()
+//                    from?.posted = true
+                    self.dismiss()
 //                    from?.expand = false
 //                    from?.from?.expand = false
 //                    group.notify(queue: .main) {
@@ -203,7 +207,8 @@ struct NewBroadcastView: View {
             Button {
                 storeBroadcastInformation(name: name, description: description, startDate: Timestamp(date: startDate), endDate: Timestamp(date: endDate), location: location)
                 if id != -1 {
-                    dismiss()
+//                    from?.posted = true
+                    self.dismiss()
 //                    from?.expand = false
 //                    from?.from?.expand = false
 //                    group.notify(queue: .main) {
@@ -231,6 +236,16 @@ struct NewBroadcastView: View {
                     return
                 }
             }
+            FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
+                if let error = error {
+                    print("Failed to fetch current user: ", error)
+                    return
+                }
+                let followers = snapshot?.data()?["followers"] as? [String] ?? []
+                for follower in followers {
+                    document.collection("privateChannels").document(follower).setData(["read": false], merge: true)
+                }
+            }
             from?.broadcast = announcement
         } else {
             fetchId()
@@ -243,6 +258,16 @@ struct NewBroadcastView: View {
                     if let err = err {
                         print(err)
                         return
+                    }
+                }
+                FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
+                    if let error = error {
+                        print("Failed to fetch current user: ", error)
+                        return
+                    }
+                    let followers = snapshot?.data()?["followers"] as? [String] ?? []
+                    for follower in followers {
+                        document.collection("privateChannels").document(follower).setData(["read": false, "commentsReadBySender": true, "commentsReadByReceiver": true])
                     }
                 }
             }
@@ -263,14 +288,14 @@ struct NewBroadcastView: View {
                     return
                 }
             }
-            FirebaseManager.shared.firestore.collection("followers").document(email).getDocument { snapshot, error in
+            FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                 if let error = error {
                     print("Failed to fetch current user: ", error)
                     return
                 }
                 let followers = snapshot?.data()?["followers"] as? [String] ?? []
                 for follower in followers {
-                    document.collection("privateChannels").document(follower).setData(["readBySender": true, "readByReceiver": true])
+                    document.collection("privateChannels").document(follower).setData(["read": false], merge: true)
                 }
             }
             from?.broadcast = event
@@ -287,14 +312,14 @@ struct NewBroadcastView: View {
                         return
                     }
                 }
-                FirebaseManager.shared.firestore.collection("followers").document(email).getDocument { snapshot, error in
+                FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                     if let error = error {
                         print("Failed to fetch current user: ", error)
                         return
                     }
                     let followers = snapshot?.data()?["followers"] as? [String] ?? []
                     for follower in followers {
-                        document.collection("privateChannels").document(follower).setData(["attendance": 0, "readBySender": true, "readByReceiver": true])
+                        document.collection("privateChannels").document(follower).setData(["attendance": 0, "read": false, "commentsReadBySender": true, "commentsReadByReceiver": true])
                     }
                 }
             }

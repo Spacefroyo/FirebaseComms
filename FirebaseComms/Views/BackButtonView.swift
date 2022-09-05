@@ -15,7 +15,7 @@ struct BackButtonView: View {
         } label: {
             HStack {
                 Image(systemName: "arrow.left")
-//                Text("Back")
+                    .foregroundColor(Color.theme.accent)
             }
         }
     }

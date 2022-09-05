@@ -25,47 +25,17 @@ struct SettingsView: View {
     @State var lastName = "Last Name"
     
     var body: some View {
-        ZStack {
-            Color.theme.background
-                .ignoresSafeArea()
-            VStack {
-                HStack {
-                    Text("Settings")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(Color.theme.foreground)
-                    
-                    Spacer()
-                    
-                    Button{
-                        GIDSignIn.sharedInstance.signOut()
-                        try? FirebaseManager.shared.auth.signOut()
-                        withAnimation {
-                            log_Status = false
-                            view_Id = 0
-                        }
-                    } label: {
-                        Text("Logout")
-                            .padding()
-                            .foregroundColor(Color.theme.foreground)
-                    }
-    //                .background(Color.theme.background)
-                }
-                
+        NavigationView {
+            ZStack {
+                Color.theme.background
+                    .ignoresSafeArea()
                 ScrollView{
                     Group{
                         TextField("First Name", text: $firstName)
                             .font(.system(size:24))
-//                            .foregroundColor(Color.theme.foreground)
-//                            .cornerRadius(15)
-//                            .background(Color.theme.accent)
-                        
-//                        Divider()
                         
                         TextField("Last Name", text: $lastName)
                             .font(.system(size:24))
-//                            .foregroundColor(Color.theme.foreground)
-//                            .cornerRadius(15)
-//                            .background(Color.theme.accent)
                     }
                     .padding()
                     .background(Color.theme.accent)
@@ -83,17 +53,27 @@ struct SettingsView: View {
                             .padding()
                             .foregroundColor(Color.theme.foreground)
                     }
-    //                .background(Color.theme.background)
+                    
+                    Button{
+                        GIDSignIn.sharedInstance.signOut()
+                        try? FirebaseManager.shared.auth.signOut()
+                        withAnimation {
+                            log_Status = false
+                            view_Id = 0
+                        }
+                    } label: {
+                        Text("Logout")
+                            .foregroundColor(Color.red)
+                    }
                 }
-                
-                
+                .padding()
+                .frame(alignment: .top)
+                .onAppear(perform: {
+                    firstName = givenName
+                    lastName = familyName
+                })
+                .navigationTitle("Settings")
             }
-            .frame(alignment: .top)
-            .onAppear(perform: {
-                firstName = givenName
-                lastName = familyName
-            })
-        .padding()
         }
     }
     

@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @AppStorage("log_Status") var log_Status = true
     @AppStorage("view_Id") var view_Id = 0
+//    @State var expand = true
     var body: some View {
         if log_Status{
             //check whether or not email matches uid, set log_Status to false if not
@@ -17,16 +18,22 @@ struct ContentView: View {
                 Color.theme.background
                     .ignoresSafeArea()
                 VStack {
-                    if view_Id == 0 {
+                    switch view_Id {
+                    case 0:
                         BroadcastsView()
-                        //.transition(.slide)
-                    } else if view_Id == 1 {
-                        SettingsView()//.transition(.slide)
-                    } else if view_Id == 2 {
-                        NewBroadcastView()//.transition(.slide)
+                    case 1:
+                        SettingsView()
+                    case 2:
+                        NewBroadcastView()
+                    case 3:
+                        FollowsView()
+                    default:
+                        TestView()
                     }
                     
                     Picker(selection: $view_Id, label: Text("Picker here")) {
+                        Image(systemName: "quote.bubble.fill")
+                            .tag(3)
                         Image(systemName: "plus.circle.fill")
                             .tag(2)
                         Image(systemName: "megaphone.fill")
@@ -34,7 +41,6 @@ struct ContentView: View {
                         Image(systemName: "gear")
                             .tag(1)
                     }.pickerStyle(SegmentedPickerStyle())
-    //                    .background(Color.theme.background)
                 }
             }
         } else{

@@ -203,7 +203,7 @@ struct BroadcastsView: View {
 //        firestoreListener?.remove()
 //        getFollows()
         group.enter()
-        FirebaseManager.shared.firestore.collection("follows").document(email ?? "").getDocument { snapshot, error in
+        FirebaseManager.shared.firestore.collection("connections").document(email ?? "").getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch current user: ", error)
                 return
@@ -335,7 +335,7 @@ struct BroadcastsView: View {
         }
     }
     
-    @State var expand: Bool = false
+//    @State var expand: Bool = false
     
     private var received: some View {
         ScrollView {
@@ -352,33 +352,34 @@ struct BroadcastsView: View {
                     .padding()
             }
         }
-        .overlay(
-            Button {
-                expand = true
-            } label: {
-                HStack{
-                    Spacer()
-                    Text("+ New Follow")
-                        .font(.system(size:16, weight: .bold))
-                    Spacer()
-                }
-                .foregroundColor(.white)
-                .padding(.vertical)
-                    .background(Color.blue)
-                    .cornerRadius(32)
-                    .padding(.horizontal)
-                    .shadow(radius:15)
-            }, alignment: .bottom)
+//        .overlay(
+//            Button {
+//                expand = true
+//            } label: {
+//                HStack{
+//                    Spacer()
+//                    Text("+ New Follow")
+//                        .font(.system(size:16, weight: .bold))
+//                    Spacer()
+//                }
+//                .foregroundColor(.white)
+//                .padding(.vertical)
+//                    .background(Color.blue)
+//                    .cornerRadius(32)
+//                    .padding(.horizontal)
+//                    .shadow(radius:15)
+//            }, alignment: .bottom)
         .navigationBarHidden(true)
         .onAppear(perform: receivedBroadcastViews)
-        .fullScreenCover(isPresented: $expand) {
-            Button {
-                expand = false
-            } label: {
-                Text("Back")
-            }
-            NewFollowView(from: self)
-        }
+//        .fullScreenCover(isPresented: $expand) {
+//            Button {
+//                expand = false
+//            } label: {
+//                Text("Back")
+//            }
+//            FollowsView()
+//                .onDisappear(perform: receivedBroadcastViews)
+//        }
     }
 }
 
