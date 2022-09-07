@@ -166,7 +166,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                                 }
                             }
                     case "event":
-                        NewBroadcastView(broadcastType: utils.broadcastType(broadcast: broadcast), name: broadcast.data["name"] as? String ?? "", description: broadcast.data["description"] as? String ?? "", startDate: (broadcast.data["startDate"] as? Timestamp ?? Timestamp()).dateValue(), endDate: (broadcast.data["endDate"] as? Timestamp ?? Timestamp()).dateValue(), location: broadcast.data["location"] as? String ?? "", id: broadcast.data["id"] as? Int ?? -1, from: self)
+                        NewBroadcastView(broadcastType: utils.broadcastType(broadcast: broadcast), name: broadcast.data["name"] as? String ?? "", description: broadcast.data["description"] as? String ?? "", startDate: (broadcast.data["startDate"] as? Timestamp ?? Timestamp()).dateValue(), endDate: (broadcast.data["endDate"] as? Timestamp ?? Timestamp()).dateValue(), location: broadcast.data["location"] as? String ?? "", attachments: broadcast.data["attachments"] as? [URL?] ?? [], id: broadcast.data["id"] as? Int ?? -1, from: self)
                             .onDisappear {
 //                                print(posted)
                                 if posted {
@@ -267,268 +267,6 @@ struct ExpandedBroadcastView: View, Identifiable {
         }
     }
     
-//    private func setBroadcast() {
-//        FirebaseManager.shared.firestore
-//            .collection("broadcasts")
-//            .document(broadcast.data["email"] as? String ?? "")
-//            .collection("sent")
-//            .document("\(broadcast.data["id"] as? Int ?? -1)")
-//            .getDocument { snapshot, error in
-//                <#code#>
-//            }
-//    }
-    
-//    static let publicCommentDefault: String = "Add Public Comment"
-//    @State var publicComment: String = ""
-//
-//    static let privateCommentDefault: String = "Add Private Comment"
-//    @State var privateComment: String = privateCommentDefault
-//    var comments: some View {
-//        VStack {
-//
-//            Divider()
-//                .padding(.top)
-//
-//            HStack {
-//                VStack {
-//                    HStack {
-//                        ZStack (alignment: .leading){
-//                            Text("Add Public Comment")
-//                                .foregroundColor(Color.theme.accent)
-////                                .padding(.leading, 18)
-//                                .padding()
-//                                .opacity(publicComment == "" ? 1 : 0)
-//
-//                            TextEditor(text: $publicComment)
-////                                .padding([.leading, .trailing])
-//                                .padding([.leading, .trailing], 11)
-//                                .padding([.top, .bottom], 8)
-//                                .lineLimit(5)
-//                        }
-//
-//                        Spacer()
-//
-//
-//                        Button {
-//                            makeComment()
-//                        } label: {
-//                            Image(systemName: "arrow.right")
-//                        }
-//                        .disabled(publicComment.isEmpty)
-//                        .padding([.top, .bottom], 2)
-//                        .padding([.trailing])
-//                    }
-//
-//                    Divider()
-//
-////                    ForEach(commentData, commentUserData, id: \.self) { i in
-////                    Text(String(commentData.count))
-//                    VStack {
-//                        ForEach(0..<commentData.count, id: \.self) { i in
-//    //                    for i in 0..<commentData.count {
-//                            let comment = commentData[i]
-//                            let data = commentUserData[i]
-//                            VStack(alignment:.leading) {
-//                                HStack(alignment: .top, spacing:16) {
-//                                    Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: data["profilePicUrl"] as? String ?? constants.defaultUrlString)!))!)
-//                                        .resizable()
-//                                        .clipped()
-//                                        .frame(width: 32, height: 32)
-//                                        .cornerRadius(16)
-//                    //                    .padding(8)
-//                                        .overlay(RoundedRectangle(cornerRadius: 16)
-//                                            .stroke(Color.theme.foreground, lineWidth: 1))
-//                                        .padding(.leading)
-//                    //                        .frame(width: 32, height: 32))
-//                                    VStack(alignment:.leading){
-//                                        HStack(alignment:.center) {
-//                                            Text("\(data["givenName"] as? String ?? "Anon") \(data["familyName"] as? String ?? "Anon")")
-//                                                .font(.system(size:16, weight:.semibold))
-//                                                .foregroundColor(Color.theme.foreground)
-//                                            Text("\(utils.getDateFormat(format: "mdy").string(from: (comment.data["Timestamp"] as? Timestamp ?? Timestamp()).dateValue()))")
-//                                                .font(.system(size:12))
-//                                                .foregroundColor(Color.theme.accent)
-//                                        }
-//                                        Text(comment.data["name"] as? String ?? "Unknown Content")
-//                                            .font(.system(size:14))
-//                                            .foregroundColor(Color.theme.foreground)
-//                                    }
-//    //                                Spacer()
-//    //
-//    //                                HStack{
-//    //                                    Circle()
-//    //                                        .foregroundColor(.red)
-//    //                                        .frame(width:12, height:12)
-//    //                                    Text(utils.timeSince(timestamp:comment.data["timestamp"] as? Timestamp ?? Timestamp()))
-//    //                                        .font(.system(size:14, weight:.semibold))
-//    //                                        .foregroundColor(Color.black)
-//    //                                        .padding(.trailing)
-//    //                                }
-//                                }
-//                                Divider()
-//                                    .padding(.vertical, 8)
-//                            }
-//
-//                        }
-//                    }
-//
-////                    Spacer()
-//                }
-//
-////                Divider()
-////
-////                VStack {
-////                    TextField("Add Private Comment", text: $privateComment)
-////
-////                    Spacer()
-////                }
-//            }
-//        }
-//        .onAppear(perform: {
-//            getComments()
-//        })
-//    }
-    
-//    private func getCommentsPath(id: Int, email: String, emailB: String) -> CollectionReference{
-//        let broadcastDocument = FirebaseManager.shared.firestore
-//            .collection("broadcasts")
-//            .document(emailB)
-//            .collection("sent")
-//            .document("\(id)")
-//
-//        return _public ?
-//        broadcastDocument
-//            .collection("comments")
-//        : broadcastDocument
-//            .collection("privateChannels")
-//            .document(email)
-//            .collection("comments")
-//    }
-    
-    //essentially id is always defined but cid isn't so do something about it
-    //maybe have it be fetched when you click on the comment?
-    
-//    private func makeComment() {
-//        let name = _public ? publicComment : privateComment
-//        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
-//        let emailB = broadcast.data["email"] as? String ?? ""
-//        let id = broadcast.data["id"] as? Int ?? -1
-//        fetchId()
-//        group.notify(queue: .main) {
-//            let comment = Comment(data: ["email": email, "id": cid, "name": name, "timestamp": Timestamp()] as [String: Any])
-//            commentData.append(comment)
-//            commentUserData.append(FirebaseManager.shared.data)
-//            getCommentsPath(id: id, email: email, emailB: emailB)
-//                .document("\(cid)")
-//                .setData(comment.data) { err in
-//                    if let err = err {
-//                        print(err)
-//                        return
-//                    }
-//                    if _public {
-//                        publicComment = ""
-//                    } else {
-//                        privateComment = ""
-//                    }
-//                }
-//        }
-//    }
-    
-//    private let group = DispatchGroup()
-//    private func fetchId(){
-//        print("Fetch")
-//        group.enter()
-//        DispatchQueue.main.async {
-//            let document = FirebaseManager.shared.firestore
-//                .collection("data")
-//                .document("commentId")
-//            document.getDocument { snapshot, error in
-//                if let error = error {
-//                    print("Failed to fetch commentId document: ", error)
-//                    return
-//                }
-//                
-//                guard let data = snapshot?.data() else {return}
-//                cid = data["id"] as? Int ?? 0
-//                print("Fetched ", cid)
-//                document.setData(["id": cid+1]) { err in
-//                    if let err = err {
-//                        print(err)
-//                        return
-//                    }
-//                    group.leave()
-//                }
-//                
-//            }
-//        }
-//    }
-    
-//    @State var commentData: [Comment] = []
-//    @State var commentUserData: [[String: Any?]] = []
-//    func getComments() {
-//        
-//        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
-//        let emailB = broadcast.data["email"] as? String ?? ""
-//        let id = broadcast.data["id"] as? Int ?? -1
-//        getCommentsPath(id: id, email: email, emailB: emailB)
-//            .getDocuments { snapshot, error in
-//                if let error = error {
-//                    print(error)
-//                    return
-//                }
-//                
-//                let documents: [QueryDocumentSnapshot] = snapshot?.documents ?? []
-//                var commentData: [Comment] = []
-//                for document in documents {
-////                    let data = document.data()
-//                    commentData.append(Comment(data: document.data()))
-////                    if _public || (data["email"] as? String ?? "") == email || (data["email"] as? String ?? "") == emailB {
-////                        commentData.append(Comment(data: document.data()))
-////
-////                    }
-//                }
-//                
-//                let commentGroup = DispatchGroup()
-////                var FirebaseManager.seenUsers: [String: [String: Any]] = [:]
-//                var commentUserData: [[String: Any?]?] = Array(repeating: nil, count: commentData.count)
-//                for i in 0..<commentData.count {
-////                for comment in commentData {
-//                    let comment = commentData[i]
-//                    commentGroup.enter()
-//                    let email = comment.data["email"] as! String
-//                    let data = FirebaseManager.seenUsers[email] ?? [:]
-//                    if data.isEmpty {
-//                        FirebaseManager.getUserData(email: email) { data in
-//                            commentUserData[i] = data
-////                            viewId += 1
-//                            commentGroup.leave()
-//                        }
-//                    } else {
-//                        commentUserData[i] = data
-////                        viewId += 1
-//                        commentGroup.leave()
-//                    }
-//                }
-//                commentGroup.notify(queue: .main) {
-//                    self.commentData = commentData
-//                    self.commentUserData = commentUserData as! [[String: Any?]]
-//                }
-//            }
-//    }
-//    
-//    func deleteComment(comment: Comment) {
-//        let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
-//        let emailB = broadcast.data["email"] as? String ?? ""
-//        let id = broadcast.data["id"] as? Int ?? -1
-//        getCommentsPath(id: id, email: email, emailB: emailB)
-//            .document("\(cid)").delete() { err in
-//                if let err = err {
-//                    print(err)
-//                    return
-//                }
-//            }
-//    }
-    
     var announcement: some View {
 //        NavigationView {
 //            ScrollView {
@@ -539,6 +277,27 @@ struct ExpandedBroadcastView: View, Identifiable {
                         .foregroundColor(Color.theme.foreground)
 //                        .background(Color.white)
                     
+                    Group {
+                        Text("Images")
+                        let imageUrls = broadcast.data["images"] as? [String] ?? []
+                        if !imageUrls.isEmpty {
+                            ScrollView(.horizontal) {
+                                HStack(spacing: 20) {
+                                    ForEach(0..<imageUrls.count, id: \.self) { i in
+                                        VStack {
+                                            Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: imageUrls[i]) ?? constants.defaultUrl))!)
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .clipped()
+                                                .frame(height: 256)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding()
+                            .background(Color.theme.accent)
+                        }
+                    }
                     
                     Text("Posted \((broadcast.data["timestamp"] as? Timestamp ?? Timestamp()).dateValue())")
                         .foregroundColor(Color.theme.accent)
@@ -563,6 +322,29 @@ struct ExpandedBroadcastView: View, Identifiable {
                 Text("\(broadcast.data["description"] as? String ?? "")")
                     .padding()
                     .foregroundColor(Color.theme.foreground)
+                
+                Group {
+                    Text("Images")
+                        .padding()
+                    let imageUrls = broadcast.data["images"] as? [String] ?? []
+                    if !imageUrls.isEmpty {
+                        ScrollView(.horizontal) {
+                            HStack(spacing: 20) {
+                                ForEach(0..<imageUrls.count, id: \.self) { i in
+                                    VStack {
+                                        Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: imageUrls[i]) ?? constants.defaultUrl))!)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .clipped()
+                                            .frame(height: 256)
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color.theme.accent)
+                    }
+                }
                 
                 HStack {
                     Text("Event Information")
@@ -608,6 +390,19 @@ struct ExpandedBroadcastView: View, Identifiable {
                     Text("Location: \(broadcast.data["location"] as? String ?? "")")
                     
                     Text("Attachments")
+                    let attachments = broadcast.data["attachments"] as? [String] ?? []
+                    let attachmentNames = broadcast.data["attachmentNames"] as? [String] ?? []
+                    if !attachments.isEmpty {
+                        ForEach(0...attachments.count-1, id: \.self) { i in
+                            URLButton(content:
+                                Text(attachmentNames[i])
+                                    .padding()
+                                    .background(Color.theme.accent)
+                                    .foregroundColor(Color.theme.foreground)
+                                    .cornerRadius(15), url: attachments[i])
+                        }
+                        .frame(alignment: .leading)
+                    }
                     
                     Text("Posted \((broadcast.data["timestamp"] as? Timestamp ?? Timestamp()).dateValue())")
                         .foregroundColor(Color.theme.accent)

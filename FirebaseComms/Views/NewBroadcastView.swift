@@ -16,7 +16,15 @@ struct NewBroadcastView: View {
     @State var startDate = Date()
     @State var endDate = Date().addingTimeInterval(2 * 60 * 60)
     @State var location = ""
+    @State var newAttachment = ""
+    @State var newAttachmentName = ""
+    @State var attachments: [URL?] = []
+    @State var attachmentNames: [String] = []
+    @State var images: [UIImage] = []
+    @State var image: UIImage?
+    @State var presentImagePicker: Bool = false
     @State var id = -1
+    @State var imageId = -1
     @AppStorage("view_Id") var view_Id = 2
     @State var from: ExpandedBroadcastView? = nil
     @Environment(\.dismiss) private var dismiss
@@ -112,31 +120,66 @@ struct NewBroadcastView: View {
             .background(Color.theme.accent)
 //                    .foregroundColor(Color.theme.foreground)
             .cornerRadius(15)
-//            .padding()
-//            TextField("Announcement", text: $name)
-//                .frame(height: 100, alignment: .top)
-//                .padding()
-//                .background(Color.theme.accent)
-//                .foregroundColor(Color.theme.foreground)
-//                .cornerRadius(15)
+            
+            Text("Images")
+            ScrollView(.horizontal) {
+                HStack(spacing: 20) {
+                    if !images.isEmpty {
+                        ForEach(0..<images.count, id: \.self) { i in
+                            VStack {
+                                Image(uiImage: images[i])
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipped()
+                                    .frame(height: 256)
+                                
+                                Button {
+                                    images.remove(at: i)
+                                } label: {
+                                    Image(systemName: "x.circle.fill")
+                                }
+                            }
+                        }
+                    }
+                    Button {
+                        presentImagePicker = true
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                    }
+                }
+            }
+            .padding()
+            .background(Color.theme.accent)
+            .fullScreenCover(isPresented: $presentImagePicker) {
+                ImagePicker(image: $image)
+                    .ignoresSafeArea()
+                    .onDisappear {
+                        if let image = image {
+                            images.append(image)
+                            self.image = nil
+                        }
+                    }
+            }
             
             Spacer()
             
             Button {
-                storeBroadcastInformation(name: name)
-                if id != -1 {
-//                    from?.posted = true
-                    self.dismiss()
-//                    from?.expand = false
-//                    from?.from?.expand = false
-//                    group.notify(queue: .main) {
-//                        from?.from?.from?.setBroadcastViews()
-//                    }
+                if images.isEmpty {
+                    storeBroadcastInformation(name: description, imageUrls: [])
+                } else {
+                    persistImageToStorage { imageUrls in
+                        storeBroadcastInformation(name: description, imageUrls: imageUrls)
+                    }
                 }
-                view_Id = 0
+                
+                if id != -1 {
+                    self.dismiss()
+                }
+//                view_Id = 0
             } label: {
-                Text("Post Announcement")
+                Text(loading ? "Uploading announcement... (Do not exit app)" : "Post Announcement")
             }
+            .disabled(description == "")
         }
     }
     
@@ -162,10 +205,51 @@ struct NewBroadcastView: View {
                         .frame(height: 100, alignment: .top)
                 }
             }
-            
             .background(Color.theme.accent)
             .foregroundColor(Color.theme.foreground)
             .cornerRadius(15)
+            
+            Group {
+                Text("Images")
+                ScrollView(.horizontal) {
+                    HStack(spacing: 20) {
+                        if !images.isEmpty {
+                            ForEach(0..<images.count, id: \.self) { i in
+                                VStack {
+                                    Image(uiImage: images[i])
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipped()
+                                        .frame(height: 256)
+                                    
+                                    Button {
+                                        images.remove(at: i)
+                                    } label: {
+                                        Image(systemName: "x.circle.fill")
+                                    }
+                                }
+                            }
+                        }
+                        Button {
+                            presentImagePicker = true
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.theme.accent)
+                .fullScreenCover(isPresented: $presentImagePicker) {
+                    ImagePicker(image: $image)
+                        .ignoresSafeArea()
+                        .onDisappear {
+                            if let image = image {
+                                images.append(image)
+                                self.image = nil
+                            }
+                        }
+                }
+            }
             
             HStack {
                 Text("Event Information")
@@ -176,23 +260,24 @@ struct NewBroadcastView: View {
             }
             .padding(.top)
             
-            DatePicker(
-                "Start Date",
-                selection: $startDate,
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .colorMultiply(Color.theme.foreground)
-            .foregroundColor(Color.theme.foreground)
-            
-            
-            DatePicker(
-                "End Date",
-                selection: $endDate,
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .colorMultiply(Color.theme.foreground)
-            .foregroundColor(Color.theme.foreground)
-            
+            Group {
+                DatePicker(
+                    "Start Date",
+                    selection: $startDate,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .colorMultiply(Color.theme.foreground)
+                .foregroundColor(Color.theme.foreground)
+                
+                
+                DatePicker(
+                    "End Date",
+                    selection: $endDate,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+                .colorMultiply(Color.theme.foreground)
+                .foregroundColor(Color.theme.foreground)
+            }
             
             TextField("Location or Video Call Link", text: $location)
                 .padding()
@@ -201,11 +286,80 @@ struct NewBroadcastView: View {
                 .cornerRadius(15)
             
             Text("Attachments")
+            Divider()
+            VStack {
+                if !attachments.isEmpty {
+                    ForEach(0...attachments.count-1, id: \.self) { i in
+                        VStack {
+                            HStack {
+                                Text(attachmentNames[i])
+                                    .padding()
+                                    .background(Color.theme.accent)
+                                    .foregroundColor(Color.theme.foreground)
+                                    .cornerRadius(15)
+                                Spacer()
+                                Button {
+                                    attachmentNames.remove(at: i)
+                                    attachments.remove(at: i)
+                                } label: {
+                                    Image(systemName: "x.circle.fill")
+                                }
+                            }
+                            HStack {
+                                Text("↳")
+                                    .padding()
+                                    .foregroundColor(Color.theme.accent)
+                                Text(attachments[i]?.absoluteString ?? "URL Error")
+                                    .padding()
+                                    .background(Color.theme.accent)
+                                    .foregroundColor(Color.theme.foreground)
+                                    .cornerRadius(15)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+                    
+                VStack {
+                    HStack {
+                        TextField("New Attachment Display Name", text: $newAttachmentName)
+                            .padding()
+                            .background(Color.theme.accent)
+                            .foregroundColor(Color.theme.foreground)
+                            .cornerRadius(15)
+                        Button {
+                            attachmentNames.append(newAttachmentName == "" ? newAttachment : newAttachmentName)
+                            newAttachmentName = ""
+                            attachments.append(URL(string: newAttachment))
+                            newAttachment = ""
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                    HStack {
+                        Text("↳")
+                            .padding()
+                            .foregroundColor(Color.theme.accent)
+                        TextField("New Attachment Link", text: $newAttachment)
+                            .padding()
+                            .background(Color.theme.accent)
+                            .foregroundColor(Color.theme.foreground)
+                            .cornerRadius(15)
+                    }
+                }
+            }
             
             Spacer()
             
             Button {
-                storeBroadcastInformation(name: name, description: description, startDate: Timestamp(date: startDate), endDate: Timestamp(date: endDate), location: location)
+                if images.isEmpty {
+                    storeBroadcastInformation(name: name, description: description, startDate: Timestamp(date: startDate), endDate: Timestamp(date: endDate), location: location, attachments: attachments, attachmentNames: attachmentNames, imageUrls: [])
+                } else {
+                    persistImageToStorage { imageUrls in
+                        storeBroadcastInformation(name: name, description: description, startDate: Timestamp(date: startDate), endDate: Timestamp(date: endDate), location: location, attachments: attachments, attachmentNames: attachmentNames, imageUrls: imageUrls)
+                    }
+                }
+                
                 if id != -1 {
 //                    from?.posted = true
                     self.dismiss()
@@ -215,18 +369,55 @@ struct NewBroadcastView: View {
 //                        from?.from?.from?.setBroadcastViews()
 //                    }
                 }
-                view_Id = 0
+                
             } label: {
-                Text("Post Event")
+                Text(loading ? "Uploading event... (Do not exit app)" : "Post Event")
+            }
+            .disabled(name == "")
+        }
+    }
+    
+    @State var loading: Bool = false
+    private func persistImageToStorage(after: @escaping ([String]) -> Void) {
+        loading = true
+        fetchImageId(increment: images.count)
+        imageGroup.notify(queue: .main) {
+            var imageUrls: [String] = []
+            let urlGroup = DispatchGroup()
+            for image in images {
+                urlGroup.enter()
+                let ref = FirebaseManager.shared.storage.reference(withPath: "\(imageId)")
+                guard let imageData = image.jpegData(compressionQuality: 0.5) else { return }
+                ref.putData(imageData, metadata: nil) { metadata, err in
+                    if let err = err {
+                        print("Failed to push image to Storage: \(err)")
+                        return
+                    }
+
+                    ref.downloadURL { url, err in
+                        if let err = err {
+                            print("Failed to retrieve downloadURL: \(err)")
+                            return
+                        }
+                        
+                        imageUrls.append(url?.absoluteString ?? constants.defaultUrlString)
+                        urlGroup.leave()
+                    }
+                }
+                imageId += 1
+            }
+            urlGroup.notify(queue: .main) {
+                after(imageUrls)
+                loading = false
             }
         }
     }
     
-    private func storeBroadcastInformation(name: String) {
+    private func storeBroadcastInformation(name: String, imageUrls: [String]) {
 //        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         if id != -1 {
-            let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "timestamp": Timestamp()] as [String: Any])
+            let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "images": imageUrls, "timestamp": Timestamp()] as [String: Any])
             changeBroadcast(broadcast: announcement)
             let document = FirebaseManager.shared.firestore.collection("broadcasts")
                 .document(email).collection("sent").document("\(id)")
@@ -235,6 +426,7 @@ struct NewBroadcastView: View {
                     print(err)
                     return
                 }
+                view_Id = 0
             }
             FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                 if let error = error {
@@ -250,7 +442,7 @@ struct NewBroadcastView: View {
         } else {
             fetchId()
             group.notify(queue: .main) {
-                let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "timestamp": Timestamp()] as [String: Any])
+                let announcement = Broadcast(data: ["email": email, "id": id, "name": name, "images": imageUrls, "timestamp": Timestamp()] as [String: Any])
                 storeBroadcast(broadcast: announcement)
                 let document = FirebaseManager.shared.firestore.collection("broadcasts")
                     .document(email).collection("sent").document("\(id)")
@@ -259,6 +451,7 @@ struct NewBroadcastView: View {
                         print(err)
                         return
                     }
+                    view_Id = 0
                 }
                 FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                     if let error = error {
@@ -274,11 +467,16 @@ struct NewBroadcastView: View {
         }
     }
     
-    private func storeBroadcastInformation(name: String, description: String, startDate: Timestamp, endDate: Timestamp, location: String) {
+    private func storeBroadcastInformation(name: String, description: String, startDate: Timestamp, endDate: Timestamp, location: String, attachments: [URL?], attachmentNames: [String], imageUrls: [String]) {
 //        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+        let attachments2 = attachments.filter { $0?.absoluteString ?? "" != "" }
+        var attachments3: [String] = []
+        for attachment in attachments2 {
+            attachments3.append(attachment?.absoluteString ?? "")
+        }
         if id != -1 {
-            let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "timestamp": Timestamp()] as [String: Any])
+            let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "attachments": attachments3, "attachmentNames": attachmentNames, "images": imageUrls, "timestamp": Timestamp()] as [String: Any])
             changeBroadcast(broadcast: event)
             let document = FirebaseManager.shared.firestore.collection("broadcasts")
                 .document(email).collection("sent").document("\(id)")
@@ -287,6 +485,7 @@ struct NewBroadcastView: View {
                     print(err)
                     return
                 }
+                view_Id = 0
             }
             FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                 if let error = error {
@@ -302,7 +501,7 @@ struct NewBroadcastView: View {
         } else {
             fetchId()
             group.notify(queue: .main) {
-                let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "timestamp": Timestamp()] as [String: Any])
+                let event = Broadcast(data: ["email": email, "id": id, "name": name, "description": description, "startDate": startDate, "endDate": endDate, "location": location, "attachments": attachments3, "attachmentNames": attachmentNames, "images": imageUrls, "timestamp": Timestamp()] as [String: Any])
                 storeBroadcast(broadcast: event)
                 let document = FirebaseManager.shared.firestore.collection("broadcasts")
                     .document(email).collection("sent").document("\(id)")
@@ -311,6 +510,7 @@ struct NewBroadcastView: View {
                         print(err)
                         return
                     }
+                    view_Id = 0
                 }
                 FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
                     if let error = error {
@@ -330,10 +530,6 @@ struct NewBroadcastView: View {
     private func fetchId(){
         group.enter()
         DispatchQueue.main.async {
-//            if id != -1 {
-//                group.leave()
-//                return
-//            }
             let document = FirebaseManager.shared.firestore.collection("data").document("broadcastId")
             document.getDocument { snapshot, error in
                 if let error = error {
@@ -349,6 +545,31 @@ struct NewBroadcastView: View {
                         return
                     }
                     group.leave()
+                }
+                
+            }
+        }
+    }
+    
+    private let imageGroup = DispatchGroup()
+    private func fetchImageId(increment: Int){
+        imageGroup.enter()
+        DispatchQueue.main.async {
+            let document = FirebaseManager.shared.firestore.collection("data").document("imageId")
+            document.getDocument { snapshot, error in
+                if let error = error {
+                    print("Failed to fetch broadcastId document: ", error)
+                    return
+                }
+                
+                guard let data = snapshot?.data() else {return}
+                imageId = data["id"] as? Int ?? 0
+                document.setData(["id": imageId+increment]) { err in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    imageGroup.leave()
                 }
                 
             }

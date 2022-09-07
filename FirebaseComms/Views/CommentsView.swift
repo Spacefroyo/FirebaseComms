@@ -50,27 +50,10 @@ struct CommentsView: View {
         : path
     }
     
-//    static func getCommentsPath(broadcast: Broadcast, email: String, _public: Bool) -> CollectionReference {
-//        let broadcastDocument = FirebaseManager.shared.firestore
-//            .collection("broadcasts")
-//            .document(broadcast.data["email"] as? String ?? "")
-//            .collection("sent")
-//            .document("\(broadcast.data["id"] as? Int ?? -1)")
-//
-//        return _public ?
-//        broadcastDocument
-//            .collection("comments")
-//        : broadcastDocument
-//            .collection("privateChannels")
-//            .document(email)
-//            .collection("comments")
-//    }
-    
     @State var commentString: String = ""
     var body: some View {
         VStack {
 //            VStack {
-            Text(isPresented.description)
             HStack {
                 ZStack (alignment: .topLeading){
                     Text("Add \(_public ? "Public" : "Private") Comment")
@@ -82,7 +65,7 @@ struct CommentsView: View {
                         .padding([.leading, .trailing], 11)
                         .padding([.top, .bottom], 8)
 //                            .lineLimit(5)
-//                            .frame(maxHeight: 100)
+                        .frame(maxHeight: 100)
                 }
                 
                 Spacer()

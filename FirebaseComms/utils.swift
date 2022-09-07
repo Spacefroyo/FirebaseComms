@@ -30,7 +30,7 @@ struct utils {
     }
 
     static func broadcastType(broadcast: Broadcast) -> String {
-        if (broadcast.data.count == 4) {
+        if (broadcast.data.count == 5) {
             return "announcement"
         } else {
             return "event"

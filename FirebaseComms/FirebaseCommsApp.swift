@@ -44,6 +44,7 @@ class Theme {
 @main
 struct FirebaseCommsApp: App {
     @AppStorage("view_Id") var view_Id = 0
+    @AppStorage("darkmode") var darkmode: Bool = false
 //    @AppStorage("log_Status") var log_Status = false
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
@@ -53,7 +54,7 @@ struct FirebaseCommsApp: App {
                     view_Id = 0
                     Theme.navigationBarColors(background: UIColor(Color.theme.background), titleColor: UIColor(Color.theme.foreground), tintColor: UIColor(Color.theme.accent))
                 })
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(darkmode ? .dark : .light)
         }
     }
 //    var displayEvent: Bool = true

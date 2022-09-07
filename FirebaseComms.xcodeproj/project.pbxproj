@@ -34,6 +34,9 @@
 		ACBA02C428BED2DC0071C9B5 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */; };
 		ACBA02C628BED9F70071C9B5 /* UserListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C528BED9F70071C9B5 /* UserListView.swift */; };
 		ACBA02C828C13C820071C9B5 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02C728C13C820071C9B5 /* TestView.swift */; };
+		ACBA02CC28C8036C0071C9B5 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */; };
+		ACBA02CE28C81FA00071C9B5 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CD28C81FA00071C9B5 /* SafariView.swift */; };
+		ACBA02D028C81FD90071C9B5 /* URLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CF28C81FD90071C9B5 /* URLButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +65,9 @@
 		ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
 		ACBA02C528BED9F70071C9B5 /* UserListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserListView.swift; sourceTree = "<group>"; };
 		ACBA02C728C13C820071C9B5 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		ACBA02CD28C81FA00071C9B5 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
+		ACBA02CF28C81FD90071C9B5 /* URLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +149,9 @@
 				ACBA02C328BED2DC0071C9B5 /* CommentsView.swift */,
 				ACBA02C528BED9F70071C9B5 /* UserListView.swift */,
 				ACBA02C728C13C820071C9B5 /* TestView.swift */,
+				ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */,
+				ACBA02CD28C81FA00071C9B5 /* SafariView.swift */,
+				ACBA02CF28C81FD90071C9B5 /* URLButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -243,7 +252,9 @@
 				AC51FB0528500947007411A5 /* NewBroadcastView.swift in Sources */,
 				AC51FB092853B26C007411A5 /* Broadcast.swift in Sources */,
 				ACBA02C428BED2DC0071C9B5 /* CommentsView.swift in Sources */,
+				ACBA02D028C81FD90071C9B5 /* URLButton.swift in Sources */,
 				AC99A29A28550E55005FA788 /* ExpandedBroadcastView.swift in Sources */,
+				ACBA02CC28C8036C0071C9B5 /* ImagePicker.swift in Sources */,
 				AC51FB01284FD656007411A5 /* SettingsView.swift in Sources */,
 				AC51FB072853B209007411A5 /* FirebaseManager.swift in Sources */,
 				AC51FADE284E64B0007411A5 /* ContentView.swift in Sources */,
@@ -251,6 +262,7 @@
 				ACBA02BC289F27E50071C9B5 /* utils.swift in Sources */,
 				AC51FADC284E64B0007411A5 /* FirebaseCommsApp.swift in Sources */,
 				AC51FB0F2853F284007411A5 /* BroadcastView.swift in Sources */,
+				ACBA02CE28C81FA00071C9B5 /* SafariView.swift in Sources */,
 				ACBA02BA2894A9030071C9B5 /* Comment.swift in Sources */,
 				AC51FAFD284E9C1D007411A5 /* BroadcastsView.swift in Sources */,
 				AC99A29E285668F7005FA788 /* FollowsView.swift in Sources */,

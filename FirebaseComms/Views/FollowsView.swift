@@ -26,6 +26,7 @@ struct FollowsView: View {
                             Text("Friends")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .padding(.top)
                             
                             Spacer()
                         }
@@ -111,14 +112,16 @@ struct FollowsView: View {
                             }
                         }
                     }
-                    .foregroundColor(Color.theme.foreground)
-                    .padding([.top, .leading, .trailing])
+                    
+                    Spacer()
+                        .padding(.vertical)
                     
                     VStack {
                         HStack {
                             Text("Following")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .padding(.top)
                             
                             Spacer()
                         }
@@ -181,14 +184,16 @@ struct FollowsView: View {
                             }
                         }
                     }
-                    .foregroundColor(Color.theme.foreground)
-                    .padding([.top, .leading, .trailing])
+                    
+                    Spacer()
+                        .padding(.vertical)
                     
                     VStack {
                         HStack {
                             Text("Followers")
                                 .font(.title2)
                                 .fontWeight(.bold)
+                                .padding(.top)
                             
                             Spacer()
                         }
@@ -230,9 +235,9 @@ struct FollowsView: View {
                                             }
                                         })}, expandable: false)
                     }
-                    .foregroundColor(Color.theme.foreground)
-                    .padding([.top, .leading, .trailing])
                 }
+                .foregroundColor(Color.theme.foreground)
+                .padding([.leading, .trailing])
             }
             .navigationTitle("People")
         }

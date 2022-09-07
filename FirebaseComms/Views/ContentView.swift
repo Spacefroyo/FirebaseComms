@@ -15,8 +15,8 @@ struct ContentView: View {
         if log_Status{
             //check whether or not email matches uid, set log_Status to false if not
             ZStack {
-                Color.theme.background
-                    .ignoresSafeArea()
+//                Color.theme.background
+//                    .ignoresSafeArea()
                 VStack {
                     switch view_Id {
                     case 0:
@@ -32,7 +32,7 @@ struct ContentView: View {
                     }
                     
                     Picker(selection: $view_Id, label: Text("Picker here")) {
-                        Image(systemName: "quote.bubble.fill")
+                        Image(systemName: "person.2.fill")
                             .tag(3)
                         Image(systemName: "plus.circle.fill")
                             .tag(2)

@@ -7,11 +7,13 @@
 
 import FirebaseFirestore
 import Firebase
+import FirebaseStorage
 import SwiftUI
 
 class FirebaseManager: NSObject {
     
     let auth: Auth
+    let storage: Storage
     let data: [String: Any?]
     
     let firestore: Firestore
@@ -20,6 +22,7 @@ class FirebaseManager: NSObject {
     
     override init() {
         self.auth = Auth.auth()
+        self.storage = Storage.storage()
         @AppStorage("givenName") var givenName : String!
         @AppStorage("familyName") var familyName : String!
         @AppStorage("profilePicUrl") var profilePicUrl : URL!

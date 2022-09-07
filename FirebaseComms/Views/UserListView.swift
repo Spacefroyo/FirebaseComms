@@ -110,11 +110,12 @@ struct UserListView: View {
         ZStack {
             Color.theme.background
                 .ignoresSafeArea()
-            ScrollView {
-                VStack {
-                    Text(error)
-                        .foregroundColor(Color.red)
-                    if userData.count > 0 {
+            if userData.count > 0 {
+                ScrollView {
+                    VStack {
+                        Text(error)
+                            .foregroundColor(Color.red)
+                        
                         ForEach(0..<userData.count, id: \.self) { i in
                             let data = userData[i]
                             let display = HStack (alignment: .center){
@@ -182,27 +183,27 @@ struct UserListView: View {
                                     .padding(.vertical, 8)
                             }
                         }
-                    } else if !connectionType.starts(with: "pending") {
-                        Text("No \(connectionType) yet")
-                            .foregroundColor(Color.theme.accent)
                     }
                 }
-            }
-            .fullScreenCover(isPresented: $expand) {
-                NavigationView {
-                    CommentsView(broadcast: broadcast, email: email, path:
-                                    path
-                        .document(email)
-                        .collection("comments"))
+                .fullScreenCover(isPresented: $expand) {
+                    NavigationView {
+                        CommentsView(broadcast: broadcast, email: email, path:
+                                        path
+                            .document(email)
+                            .collection("comments"))
+                    }
+                    .onAppear(perform: getUserData)
+                    .onDisappear(perform: getUserData)
                 }
-                .onAppear(perform: getUserData)
-                .onDisappear(perform: getUserData)
-            }
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    isPresented ? BackButtonView(dismiss: self.dismiss) : nil
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        isPresented ? BackButtonView(dismiss: self.dismiss) : nil
+                    }
                 }
+            } else if !connectionType.starts(with: "pending") {
+                Text("No \(connectionType) yet")
+                    .foregroundColor(Color.theme.accent)
             }
         }
         .onAppear(perform: getUserData)

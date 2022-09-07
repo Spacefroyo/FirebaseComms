@@ -31,7 +31,7 @@ struct BroadcastView: View, Identifiable {
                         .cornerRadius(16)
     //                    .padding(8)
                         .overlay(RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.black, lineWidth: 1))
+                            .stroke(Color.theme.foreground, lineWidth: 1))
 //                        .padding(.leading)
     //                        .frame(width: 32, height: 32))
                     VStack(alignment:.leading){
