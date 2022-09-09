@@ -9,6 +9,9 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import GoogleSignIn
+import FirebaseMessaging
+import FirebaseAnalytics
+import UserNotifications
 
 class Theme {
     static func navigationBarColors(background : UIColor?,
@@ -30,13 +33,10 @@ class Theme {
         UISegmentedControl.appearance().selectedSegmentTintColor = tintColor
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: titleColor!], for: .selected)
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: titleColor!], for: .normal)
-//        UISegmentedControl.appearance().
         
         UITextField.appearance().textColor = titleColor
         UITextView.appearance().backgroundColor = .clear
-//        UIDatePicker.appearance().tintColor = titleColor
-//        UIDatePicker.appearance().backgroundColor = background
-//        UIDatePicker.appearance().isOpaque = false
+        UITextView.appearance().tintColor = titleColor
 
     }
 }
@@ -57,22 +57,33 @@ struct FirebaseCommsApp: App {
                 .preferredColorScheme(darkmode ? .dark : .light)
         }
     }
-//    var displayEvent: Bool = true
-//    var body: some Scene {
-//        WindowGroup {
-//        if displayEvent {
-//                ExpandedBroadcastView(broadcast: Broadcast(data: ["name": "testEvent", "id": -1, "uid": "DNE", "timestamp": Timestamp(), "description": "testEvent description goes something like this. blah blah blah blah blah", "startDate": Date(), "endDate": Date(), "location": "testLocation"]))
-//            } else {
-//                ExpandedBroadcastView(broadcast: Broadcast(data: ["name": "testAnnouncement goes something like this. blah blah blah blah blah", "id": -1, "uid": "DNE", "timestamp": Timestamp()]))
-//            }
-//        }
-//    }
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    let gcmMessageIDKey = "gcm.message_id"
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        
         FirebaseApp.configure()
+        
+        FirebaseConfiguration.shared.setLoggerLevel(.min)
+        
+        Messaging.messaging().delegate = self
+
+        if #available(iOS 10.0, *) {
+          // For iOS 10 display notification (sent via APNS)
+          UNUserNotificationCenter.current().delegate = self
+
+          let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+          UNUserNotificationCenter.current().requestAuthorization(
+            options: authOptions,
+            completionHandler: {_, _ in })
+        } else {
+          let settings: UIUserNotificationSettings =
+          UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+          application.registerUserNotificationSettings(settings)
+        }
+
+        application.registerForRemoteNotifications()
         
         return true
     }
@@ -80,6 +91,77 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, open url: URL,
                      options: [UIApplication.OpenURLOptionsKey: Any])
       -> Bool {
+          
       return GIDSignIn.sharedInstance.handle(url)
     }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+
+      if let messageID = userInfo[gcmMessageIDKey] {
+        print("Message ID: \(messageID)")
+      }
+
+      print(userInfo)
+
+      completionHandler(UIBackgroundFetchResult.newData)
+    }
 }
+
+extension AppDelegate: MessagingDelegate {
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+
+        let deviceToken:[String: String] = ["token": fcmToken ?? ""]
+        print("Device token: ", deviceToken) // This token can be used for testing notifications on FCM
+    }
+}
+
+@available(iOS 10, *)
+extension AppDelegate : UNUserNotificationCenterDelegate {
+
+  // Receive displayed notifications for iOS 10 devices.
+  func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              willPresent notification: UNNotification,
+    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    let userInfo = notification.request.content.userInfo
+
+    if let messageID = userInfo[gcmMessageIDKey] {
+        print("Message ID: \(messageID)")
+    }
+
+    print(userInfo)
+
+    // Change this to your preferred presentation option
+    completionHandler([[.banner, .badge, .sound]])
+  }
+
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+
+    }
+
+  func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              didReceive response: UNNotificationResponse,
+                              withCompletionHandler completionHandler: @escaping () -> Void) {
+    let userInfo = response.notification.request.content.userInfo
+
+    if let messageID = userInfo[gcmMessageIDKey] {
+      print("Message ID from userNotificationCenter didReceive: \(messageID)")
+    }
+
+    print(userInfo)
+
+    completionHandler()
+  }
+}
+
+#if canImport(UIKit)
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+#endif

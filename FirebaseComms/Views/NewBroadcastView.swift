@@ -8,6 +8,8 @@
 import SwiftUI
 import Firebase
 import FirebaseFirestore
+import FirebaseAnalytics
+import FirebaseMessaging
 
 struct NewBroadcastView: View {
     @State var broadcastType = "announcement"
@@ -26,6 +28,8 @@ struct NewBroadcastView: View {
     @State var id = -1
     @State var imageId = -1
     @AppStorage("view_Id") var view_Id = 2
+    @AppStorage("givenName") var givenName: String!
+    @AppStorage("familyName") var familyName: String!
     @State var from: ExpandedBroadcastView? = nil
     @Environment(\.dismiss) private var dismiss
     @State var posted: Bool = false
@@ -94,6 +98,24 @@ struct NewBroadcastView: View {
                     ToolbarItem(placement: .navigationBarLeading) {
                         id != -1 ? BackButtonView(dismiss: self.dismiss) : nil
                     }
+                }
+                .overlay(
+                    ZStack{
+                        if loading {
+                            Color.black
+                                .opacity(0.25)
+                                .ignoresSafeArea()
+                            
+                            ProgressView()
+                                .font(.title2)
+                                .frame(width: 60, height: 60)
+                                .background(Color.theme.background)
+                                .cornerRadius(10)
+                        }
+                    }
+                )
+                .onTapGesture {
+                    hideKeyboard()
                 }
             }
         }
@@ -335,6 +357,7 @@ struct NewBroadcastView: View {
                         } label: {
                             Image(systemName: "plus")
                         }
+                        .disabled(newAttachment == "")
                     }
                     HStack {
                         Text("↳")
@@ -352,6 +375,12 @@ struct NewBroadcastView: View {
             Spacer()
             
             Button {
+                if newAttachment != "" {
+                    attachmentNames.append(newAttachmentName == "" ? newAttachment : newAttachmentName)
+                    newAttachmentName = ""
+                    attachments.append(URL(string: newAttachment))
+                    newAttachment = ""
+                }
                 if images.isEmpty {
                     storeBroadcastInformation(name: name, description: description, startDate: Timestamp(date: startDate), endDate: Timestamp(date: endDate), location: location, attachments: attachments, attachmentNames: attachmentNames, imageUrls: [])
                 } else {
@@ -426,6 +455,7 @@ struct NewBroadcastView: View {
                     print(err)
                     return
                 }
+                
                 view_Id = 0
             }
             FirebaseManager.shared.firestore.collection("connections").document(email).getDocument { snapshot, error in
@@ -438,6 +468,7 @@ struct NewBroadcastView: View {
                     document.collection("privateChannels").document(follower).setData(["read": false], merge: true)
                 }
             }
+            PushNotificationSender().pushToFollowers(title: "\(String(describing: givenName)) \(String(describing: familyName)) has posted a new announcement", body: name)
             from?.broadcast = announcement
         } else {
             fetchId()
@@ -463,6 +494,7 @@ struct NewBroadcastView: View {
                         document.collection("privateChannels").document(follower).setData(["read": false, "commentsReadBySender": true, "commentsReadByReceiver": true])
                     }
                 }
+                PushNotificationSender().pushToFollowers(title: "\(String(describing: givenName)) \(String(describing: familyName)) has edited an announcement", body: name)
             }
         }
     }
@@ -497,6 +529,7 @@ struct NewBroadcastView: View {
                     document.collection("privateChannels").document(follower).setData(["read": false], merge: true)
                 }
             }
+            PushNotificationSender().pushToFollowers(title: "\(String(describing: givenName)) \(String(describing: familyName)) has posted a new event", body: name)
             from?.broadcast = event
         } else {
             fetchId()
@@ -522,6 +555,7 @@ struct NewBroadcastView: View {
                         document.collection("privateChannels").document(follower).setData(["attendance": 0, "read": false, "commentsReadBySender": true, "commentsReadByReceiver": true])
                     }
                 }
+                PushNotificationSender().pushToFollowers(title: "\(String(describing: givenName)) \(String(describing: familyName)) has edited an event", body: name)
             }
         }
     }

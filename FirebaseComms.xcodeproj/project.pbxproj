@@ -37,6 +37,10 @@
 		ACBA02CC28C8036C0071C9B5 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */; };
 		ACBA02CE28C81FA00071C9B5 /* SafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CD28C81FA00071C9B5 /* SafariView.swift */; };
 		ACBA02D028C81FD90071C9B5 /* URLButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02CF28C81FD90071C9B5 /* URLButton.swift */; };
+		ACBA02D228C951430071C9B5 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ACBA02D128C951430071C9B5 /* FirebaseAnalytics */; };
+		ACBA02D428C951480071C9B5 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ACBA02D328C951480071C9B5 /* FirebaseMessaging */; };
+		ACBA02D728CA80AD0071C9B5 /* PushNotificationSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02D628CA80AD0071C9B5 /* PushNotificationSender.swift */; };
+		ACBA02D928CAA5CC0071C9B5 /* PullToRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBA02D828CAA5CC0071C9B5 /* PullToRefresh.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +72,9 @@
 		ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		ACBA02CD28C81FA00071C9B5 /* SafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariView.swift; sourceTree = "<group>"; };
 		ACBA02CF28C81FD90071C9B5 /* URLButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLButton.swift; sourceTree = "<group>"; };
+		ACBA02D528C99E120071C9B5 /* FirebaseComms.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FirebaseComms.entitlements; sourceTree = "<group>"; };
+		ACBA02D628CA80AD0071C9B5 /* PushNotificationSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationSender.swift; sourceTree = "<group>"; };
+		ACBA02D828CAA5CC0071C9B5 /* PullToRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullToRefresh.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,9 +82,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACBA02D428C951480071C9B5 /* FirebaseMessaging in Frameworks */,
 				AC51FAEE284E713E007411A5 /* GoogleSignIn in Frameworks */,
 				AC51FAFB284E87B0007411A5 /* FirebaseStorage in Frameworks */,
 				AC51FAF7284E87B0007411A5 /* FirebaseAuth in Frameworks */,
+				ACBA02D228C951430071C9B5 /* FirebaseAnalytics in Frameworks */,
 				AC51FAF9284E87B0007411A5 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -105,6 +114,7 @@
 		AC51FADA284E64B0007411A5 /* FirebaseComms */ = {
 			isa = PBXGroup;
 			children = (
+				ACBA02D528C99E120071C9B5 /* FirebaseComms.entitlements */,
 				AC51FB0B2853C511007411A5 /* Classes */,
 				AC51FB0A2853C4CF007411A5 /* Views */,
 				AC51FAF1284E72CD007411A5 /* Info.plist */,
@@ -152,6 +162,7 @@
 				ACBA02CB28C8036C0071C9B5 /* ImagePicker.swift */,
 				ACBA02CD28C81FA00071C9B5 /* SafariView.swift */,
 				ACBA02CF28C81FD90071C9B5 /* URLButton.swift */,
+				ACBA02D828CAA5CC0071C9B5 /* PullToRefresh.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -163,6 +174,7 @@
 				AC51FB082853B26C007411A5 /* Broadcast.swift */,
 				ACBA02B92894A9030071C9B5 /* Comment.swift */,
 				ACBA02BD28A59BFC0071C9B5 /* CalendarManager.swift */,
+				ACBA02D628CA80AD0071C9B5 /* PushNotificationSender.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -188,6 +200,8 @@
 				AC51FAF6284E87B0007411A5 /* FirebaseAuth */,
 				AC51FAF8284E87B0007411A5 /* FirebaseFirestore */,
 				AC51FAFA284E87B0007411A5 /* FirebaseStorage */,
+				ACBA02D128C951430071C9B5 /* FirebaseAnalytics */,
+				ACBA02D328C951480071C9B5 /* FirebaseMessaging */,
 			);
 			productName = FirebaseComms;
 			productReference = AC51FAD8284E64B0007411A5 /* FirebaseComms.app */;
@@ -256,6 +270,7 @@
 				AC99A29A28550E55005FA788 /* ExpandedBroadcastView.swift in Sources */,
 				ACBA02CC28C8036C0071C9B5 /* ImagePicker.swift in Sources */,
 				AC51FB01284FD656007411A5 /* SettingsView.swift in Sources */,
+				ACBA02D728CA80AD0071C9B5 /* PushNotificationSender.swift in Sources */,
 				AC51FB072853B209007411A5 /* FirebaseManager.swift in Sources */,
 				AC51FADE284E64B0007411A5 /* ContentView.swift in Sources */,
 				AC51FAF3284E7C7D007411A5 /* LoginView.swift in Sources */,
@@ -272,6 +287,7 @@
 				ACBA02C228BD7CF20071C9B5 /* BackButtonView.swift in Sources */,
 				AC99A29828550A7E005FA788 /* constants.swift in Sources */,
 				ACBA02BE28A59BFC0071C9B5 /* CalendarManager.swift in Sources */,
+				ACBA02D928CAA5CC0071C9B5 /* PullToRefresh.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,6 +413,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FirebaseComms/FirebaseComms.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FirebaseComms/Preview Content\"";
@@ -428,6 +445,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FirebaseComms/FirebaseComms.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FirebaseComms/Preview Content\"";
@@ -524,6 +542,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AC51FAF5284E87B0007411A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		ACBA02D128C951430071C9B5 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC51FAE9284E70D4007411A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ACBA02D328C951480071C9B5 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC51FAE9284E70D4007411A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -104,7 +104,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                                             }
                                         }
                                 }
-                                CommentsView(broadcast: broadcast, email: FirebaseManager.shared.auth.currentUser?.email ?? "", path:
+                                CommentsView(broadcast: broadcast, email: broadcast.data["email"] as? String ?? "", path:
                                                 FirebaseManager.shared.firestore
                                                     .collection("broadcasts")
                                                     .document(broadcast.data["email"] as? String ?? "")
@@ -158,7 +158,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                 .fullScreenCover(isPresented: $expand) {
                     switch utils.broadcastType(broadcast: broadcast) {
                     case "announcement":
-                        NewBroadcastView(broadcastType: utils.broadcastType(broadcast: broadcast), name: broadcast.data["name"] as? String ?? "", id: broadcast.data["id"] as? Int ?? -1, from: self)
+                        NewBroadcastView(broadcastType: utils.broadcastType(broadcast: broadcast), description: broadcast.data["name"] as? String ?? "", id: broadcast.data["id"] as? Int ?? -1, from: self)
                             .onDisappear {
 //                                print(posted)
                                 if posted {
@@ -181,6 +181,9 @@ struct ExpandedBroadcastView: View, Identifiable {
                     }
                 }
             }
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
 //        .onTapGesture {
 //            if (publicComment == "") {
@@ -271,16 +274,21 @@ struct ExpandedBroadcastView: View, Identifiable {
 //        NavigationView {
 //            ScrollView {
                 VStack (spacing: 16){
-                    Text("\(broadcast.data["name"] as? String ?? "")")
-    //                    .frame(height: 100, alignment: .top)
-                        .padding()
-                        .foregroundColor(Color.theme.foreground)
-//                        .background(Color.white)
+                    HStack {
+                        Text("\(broadcast.data["name"] as? String ?? "")")
+        //                    .frame(height: 100, alignment: .top)
+                            .padding()
+                            .foregroundColor(Color.theme.foreground)
+//                          .background(Color.white)
+                        
+                        Spacer()
+                    }
                     
                     Group {
-                        Text("Images")
                         let imageUrls = broadcast.data["images"] as? [String] ?? []
                         if !imageUrls.isEmpty {
+                            Text("Images")
+                                .padding()
                             ScrollView(.horizontal) {
                                 HStack(spacing: 20) {
                                     ForEach(0..<imageUrls.count, id: \.self) { i in
@@ -324,10 +332,10 @@ struct ExpandedBroadcastView: View, Identifiable {
                     .foregroundColor(Color.theme.foreground)
                 
                 Group {
-                    Text("Images")
-                        .padding()
                     let imageUrls = broadcast.data["images"] as? [String] ?? []
                     if !imageUrls.isEmpty {
+                        Text("Images")
+                            .padding()
                         ScrollView(.horizontal) {
                             HStack(spacing: 20) {
                                 ForEach(0..<imageUrls.count, id: \.self) { i in
@@ -389,10 +397,10 @@ struct ExpandedBroadcastView: View, Identifiable {
                     
                     Text("Location: \(broadcast.data["location"] as? String ?? "")")
                     
-                    Text("Attachments")
                     let attachments = broadcast.data["attachments"] as? [String] ?? []
                     let attachmentNames = broadcast.data["attachmentNames"] as? [String] ?? []
                     if !attachments.isEmpty {
+                        Text("Attachments")
                         ForEach(0...attachments.count-1, id: \.self) { i in
                             URLButton(content:
                                 Text(attachmentNames[i])

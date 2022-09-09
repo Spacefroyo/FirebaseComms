@@ -20,6 +20,7 @@ class BroadcastsViewModel: ObservableObject {
     @AppStorage("givenName") var givenName : String!
     @AppStorage("familyName") var familyName : String!
     @AppStorage("profilePicUrl") var profilePicUrl : URL!
+    
 //    @AppStorage("log_Status") var log_Status = false
 
     private func fetchCurrentUser() {
@@ -47,7 +48,8 @@ class BroadcastsViewModel: ObservableObject {
 }
 
 struct BroadcastsView: View {
-    
+    @State var loading: Bool = true
+
     @ObservedObject private var vm = BroadcastsViewModel()
     @AppStorage("log_Status") var log_Status = true
     
@@ -116,6 +118,21 @@ struct BroadcastsView: View {
             }
             
         }
+        .overlay(
+            ZStack{
+                if loading {
+                    Color.black
+                        .opacity(0.25)
+                        .ignoresSafeArea()
+                    
+                    ProgressView()
+                        .font(.title2)
+                        .frame(width: 60, height: 60)
+                        .background(Color.theme.background)
+                        .cornerRadius(10)
+                }
+            }
+        )
 //        .onAppear(perform: setBroadcastViews)
 //        .onAppear(perform: {sentBroadcasts = ""})
     }
@@ -295,6 +312,7 @@ struct BroadcastsView: View {
     }
     
     func receivedBroadcastViews() {
+        loading = true
         getBroadcasts()
 //        print(loadedReceivedBroadcasts.count)
         group.notify(queue: .main) {
@@ -330,6 +348,7 @@ struct BroadcastsView: View {
                     $0!.broadcast.data["id"] as? Int ?? -1 > $1!.broadcast.data["id"] as? Int ?? -1
                 })
                 self.broadcastViews = broadcastViews as! [BroadcastView]
+                loading = false
             }
 
         }
@@ -339,6 +358,9 @@ struct BroadcastsView: View {
     
     private var received: some View {
         ScrollView {
+            PullToRefresh(coordinateSpaceName: "pullToRefresh") {
+                receivedBroadcastViews()
+            }
             if broadcastViews.count > 0 {
                 ForEach(broadcastViews) { broadcastView in
                     let fromCurrentUser = broadcastView.broadcast.data["email"] as? String == email
@@ -352,34 +374,9 @@ struct BroadcastsView: View {
                     .padding()
             }
         }
-//        .overlay(
-//            Button {
-//                expand = true
-//            } label: {
-//                HStack{
-//                    Spacer()
-//                    Text("+ New Follow")
-//                        .font(.system(size:16, weight: .bold))
-//                    Spacer()
-//                }
-//                .foregroundColor(.white)
-//                .padding(.vertical)
-//                    .background(Color.blue)
-//                    .cornerRadius(32)
-//                    .padding(.horizontal)
-//                    .shadow(radius:15)
-//            }, alignment: .bottom)
+        .coordinateSpace(name: "pullToRefresh")
         .navigationBarHidden(true)
         .onAppear(perform: receivedBroadcastViews)
-//        .fullScreenCover(isPresented: $expand) {
-//            Button {
-//                expand = false
-//            } label: {
-//                Text("Back")
-//            }
-//            FollowsView()
-//                .onDisappear(perform: receivedBroadcastViews)
-//        }
     }
 }
 

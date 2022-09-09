@@ -13,24 +13,17 @@ struct CommentsView: View {
     let _public: Bool
     let path: CollectionReference?
     let email: String
+    @AppStorage("givenName") var givenName: String!
+    @AppStorage("familyName") var familyName: String!
     @Environment(\.dismiss) private var dismiss
     @Environment(\.isPresented) private var isPresented
+    @State var loading: Bool = true
     
     init(broadcast: Broadcast, path: CollectionReference) {
         self.broadcast = broadcast
         self._public = true
         self.email = FirebaseManager.shared.auth.currentUser?.email ?? ""
-        var userSort: [String] = [email, FirebaseManager.shared.auth.currentUser?.email ?? ""]
-        userSort.sort (by: {
-            $0.compare($1) == .orderedAscending
-        })
-        self.path = path.parent?.parent.parent?.documentID ?? "" == FirebaseManager.shared.auth.currentUser?.email ?? "" ?
-        path.parent?.parent.parent?.parent
-            .document(userSort[0])
-            .collection("privateChannels")
-            .document(userSort[1])
-            .collection("comments")
-        : path
+        self.path = path
     }
     
     init(broadcast: Broadcast, email: String, path: CollectionReference) {
@@ -41,7 +34,7 @@ struct CommentsView: View {
         userSort.sort (by: {
             $0.compare($1) == .orderedAscending
         })
-        self.path = path.parent?.parent.parent?.documentID ?? "" == FirebaseManager.shared.auth.currentUser?.email ?? "" ?
+        self.path = path.parent?.parent.parent?.parent.collectionID ?? "" == "messages" ?
         path.parent?.parent.parent?.parent
             .document(userSort[0])
             .collection("privateChannels")
@@ -72,7 +65,7 @@ struct CommentsView: View {
                     
                     
                 Button {
-                    makeComment()
+                    makeComment(name: commentString)
                 } label: {
                     Image(systemName: "arrow.right")
                 }
@@ -88,6 +81,9 @@ struct CommentsView: View {
             
             
             ScrollView {
+                PullToRefresh(coordinateSpaceName: "pullToRefresh") {
+                    getComments()
+                }
                 VStack {
                     if commentData.count == 0 {
                         Text("No comments yet")
@@ -125,6 +121,7 @@ struct CommentsView: View {
                     }
                 }
             }
+            .coordinateSpace(name: "pullToRefresh")
 //            }
         }
         .onAppear(perform: {
@@ -140,6 +137,24 @@ struct CommentsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .foregroundColor(Color.theme.foreground)
         .background(Color.theme.background)
+        .overlay(
+            ZStack{
+                if loading {
+                    Color.black
+                        .opacity(0.25)
+                        .ignoresSafeArea()
+                    
+                    ProgressView()
+                        .font(.title2)
+                        .frame(width: 60, height: 60)
+                        .background(Color.theme.background)
+                        .cornerRadius(10)
+                }
+            }
+        )
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     @State var cid: Int = -1
@@ -172,8 +187,7 @@ struct CommentsView: View {
         }
     }
     
-    private func makeComment() {
-        let name = commentString
+    private func makeComment(name: String) {
         commentString = ""
         let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
         fetchId()
@@ -192,6 +206,9 @@ struct CommentsView: View {
                         return
                     }
                 }
+            if !_public {
+                PushNotificationSender().push(emails: [self.email], title: "\(String(describing: givenName)) \(String(describing: familyName)) has sent you a private message", body: name)
+            }
         }
     }
     
@@ -207,6 +224,7 @@ struct CommentsView: View {
     @State var commentData: [Comment] = []
     @State var commentUserData: [[String: Any?]] = []
     func getComments() {
+        loading = true
         path?
             .getDocuments { snapshot, error in
                 if let error = error {
@@ -250,6 +268,7 @@ struct CommentsView: View {
                     self.commentData = commentData
                     self.commentUserData = commentUserData as! [[String: Any?]]
                     updateRead(status: true)
+                    loading = false
                 }
             }
     }

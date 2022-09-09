@@ -9,6 +9,8 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import GoogleSignIn
+import FirebaseAnalytics
+import FirebaseMessaging
 
 struct LoginView: View {
     
@@ -60,7 +62,7 @@ struct LoginView: View {
                             .cornerRadius(10)
                     }
                 }
-        )
+            )
         }
     }
     
@@ -102,18 +104,41 @@ struct LoginView: View {
                                                              accessToken: authentication.accessToken)
             
             FirebaseManager.shared.auth.signIn(with: credential) { result, err in
-                
+                Messaging.messaging().token { token, error in
+                    if let error = error {
+                        print("Error fetching FCM registration token: \(error)")
+                    } else if let token = token {
+                        print("FCM registration token: \(token)")
+//                        Messaging.messaging().subscribe(toTopic: email) { error in
+//                          print("Subscribed to user \(email)")
+//                        }
+                        let document = FirebaseManager.shared.firestore.collection("logins").document(email)
+                        document.getDocument { snapshot, error in
+                            if let error = error {
+                                print("Failed to fetch current user: ", error)
+                                return
+                            }
+
+                            let data = snapshot?.data()
+                            var tokens = data?["tokens"] as? [String] ?? []
+                            tokens.append(token)
+                            document.setData(["tokens": tokens])
+                        }
+                    }
+                }
                 guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
                 FirebaseManager.shared.firestore.collection("users").document(email).getDocument { snapshot, error in
                     if let error = error {
                         print("Failed to fetch current user: ", error)
                         return
                     }
-                    guard let data = snapshot?.data() else {
+                    guard (snapshot?.data()) != nil else {
                         storeUserInformation(givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
+                        isLoading = false
                         return
                     }
                 }
+                
                 isLoading = false
                 
                 if let error = err {

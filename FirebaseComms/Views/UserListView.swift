@@ -19,6 +19,7 @@ struct UserListView: View {
     @State var expand: Bool = false
     @State var email: String = ""
     @State var error: String = ""
+    @State var loading: Bool = true
     
     @Environment(\.dismiss) private var dismiss
     
@@ -32,7 +33,8 @@ struct UserListView: View {
     }
     
     let group = DispatchGroup()
-    func getUserData() {
+    func getUserData(after: @escaping ()->Void = {() -> Void in return}) {
+        loading = true
         let email = FirebaseManager.shared.auth.currentUser?.email ?? ""
         var userData: [[String: Any?]] = []
         group.enter()
@@ -42,7 +44,25 @@ struct UserListView: View {
                 return
             }
             let users = snapshot?.data()?[connectionType] as? [String] ?? []
-            for _ in users {
+            for user in users {
+                var userSort: [String] = [email, user]
+                userSort.sort (by: {
+                    $0.compare($1) == .orderedAscending
+                })
+                let document = path.parent?.documentID ?? "" == email ?
+                path.parent?.parent
+                    .document(userSort[0])
+                    .collection("privateChannels")
+                    .document(userSort[1])
+                : path
+                    .document(user)
+                document?
+                    .getDocument { snapshot, error in
+                        if let snapshot = snapshot, snapshot.exists {
+                            } else {
+                                document?.setData(["attendance": 0, "read": true, "commentsReadBySender": true, "commentsReadByReceiver": true])
+                            }
+                    }
                 group.enter()
             }
             for user in users {
@@ -101,6 +121,8 @@ struct UserListView: View {
 //                            || ($0["email"] as? String ?? "").compare($1["email"] as? String ?? "") == .orderedAscending)))
             })
             self.userData = userData
+            after()
+            loading = false
         }
     }
     
@@ -159,7 +181,7 @@ struct UserListView: View {
                                 
                                 Spacer()
                                 
-                                if !(data["commentsReadBy\((FirebaseManager.shared.auth.currentUser?.email ?? "").compare(data["email"] as? String ?? "") == .orderedAscending ? "Sender" : "Receiver")"] as? Bool ?? true) {
+                                if !(data["commentsReadBy\((FirebaseManager.shared.auth.currentUser?.email ?? "").compare(data["email"] as? String ?? "") == .orderedAscending ? "Sender" : "Receiver")"] as? Bool ?? true) && appendView("") == nil {
                                     Circle()
                                         .foregroundColor(.red)
                                         .frame(width:12, height:12)
@@ -192,21 +214,51 @@ struct UserListView: View {
                             .document(email)
                             .collection("comments"))
                     }
-                    .onAppear(perform: getUserData)
-                    .onDisappear(perform: getUserData)
-                }
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        isPresented ? BackButtonView(dismiss: self.dismiss) : nil
+                    .onAppear {
+                        getUserData()
+                    }
+                    .onDisappear {
+                        getUserData()
                     }
                 }
+//                .navigationBarBackButtonHidden(true)
+//                .toolbar {
+//                    ToolbarItem(placement: .navigationBarLeading) {
+//                        isPresented ? BackButtonView(dismiss: self.dismiss) : nil
+//                    }
+//                }
             } else if !connectionType.starts(with: "pending") {
                 Text("No \(connectionType) yet")
                     .foregroundColor(Color.theme.accent)
             }
         }
-        .onAppear(perform: getUserData)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                isPresented ? BackButtonView(dismiss: self.dismiss) : nil
+            }
+        }
+        .onAppear {
+            getUserData()
+        }
+        .overlay(
+            ZStack{
+                if loading {
+                    if isPresented {
+                        Color.black
+                            .opacity(0.25)
+                            .ignoresSafeArea()
+                    }
+                    
+                    ProgressView()
+                        .font(.title2)
+                        .frame(width: 60, height: 60)
+                        .background(Color.theme.background)
+                        .ignoresSafeArea()
+                        .cornerRadius(10)
+                }
+            }
+        )
 //            .task {
 //                await getUserData()
 //            }

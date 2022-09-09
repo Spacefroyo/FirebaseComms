@@ -9,6 +9,8 @@ import SwiftUI
 import Firebase
 import FirebaseFirestore
 import GoogleSignIn
+import FirebaseAnalytics
+import FirebaseMessaging
 
 struct SettingsView: View {
     
@@ -93,11 +95,36 @@ struct SettingsView: View {
                     .disabled(loading)
                     
                     Button{
-                        GIDSignIn.sharedInstance.signOut()
-                        try? FirebaseManager.shared.auth.signOut()
-                        withAnimation {
-                            log_Status = false
-                            view_Id = 0
+                        guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
+                        Messaging.messaging().token { token, error in
+                            if let error = error {
+                                print("Error fetching FCM registration token: \(error)")
+                            } else if let token = token {
+                                print("FCM registration token: \(token)")
+//                                Messaging.messaging().unsubscribe(fromTopic: email) { error in
+//                                  print("Unsubscribed from user \(email)")
+//                                }
+                                let document = FirebaseManager.shared.firestore.collection("logins").document(email)
+                                document.getDocument { snapshot, error in
+                                    if let error = error {
+                                        print("Failed to fetch current user: ", error)
+                                        return
+                                    }
+
+                                    let data = snapshot?.data()
+                                    var tokens = data?["tokens"] as? [String] ?? []
+                                    tokens.removeAll { str in
+                                        str == token
+                                    }
+                                    document.setData(["tokens": tokens])
+                                    GIDSignIn.sharedInstance.signOut()
+                                    try? FirebaseManager.shared.auth.signOut()
+                                    withAnimation {
+                                        log_Status = false
+                                        view_Id = 0
+                                    }
+                                }
+                            }
                         }
                     } label: {
                         Text("Logout")
@@ -114,6 +141,9 @@ struct SettingsView: View {
                 .fullScreenCover(isPresented: $presentImagePicker) {
                     ImagePicker(image: $profilePic)
                         .ignoresSafeArea()
+                }
+                .onTapGesture {
+                    hideKeyboard()
                 }
             }
         }

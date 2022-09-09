@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("log_Status") var log_Status = true
+    @AppStorage("log_Status") var log_Status: Bool?
     @AppStorage("view_Id") var view_Id = 0
 //    @State var expand = true
     var body: some View {
-        if log_Status{
+        if log_Status ?? false {
             //check whether or not email matches uid, set log_Status to false if not
             ZStack {
 //                Color.theme.background
@@ -40,8 +40,10 @@ struct ContentView: View {
                             .tag(0)
                         Image(systemName: "gear")
                             .tag(1)
-                    }.pickerStyle(SegmentedPickerStyle())
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
                 }
+                .ignoresSafeArea(.keyboard)
             }
         } else{
             LoginView()

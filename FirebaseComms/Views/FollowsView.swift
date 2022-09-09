@@ -13,6 +13,9 @@ struct FollowsView: View {
     @State var other = ""
     @State var emailError: String = ""
     @State var success: Bool = true
+    @State var toggleBool: Bool = false
+    @AppStorage("givenName") var givenName: String!
+    @AppStorage("familyName") var familyName: String!
 //    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -31,7 +34,7 @@ struct FollowsView: View {
                             Spacer()
                         }
                         Divider()
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "friends", path:
+                        let uv = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "friends", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -44,7 +47,13 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                                     }
                                                 )}, expandable: true)
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingOutFriends", path:
+                        uv
+                            .onChange(of: emailError, perform: {_ in
+                                uv.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
+                        let uv2 = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingOutFriends", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -60,7 +69,13 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                                     }
                                                 })}, expandable: false)
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingInFriends", path:
+                        uv2
+                            .onChange(of: emailError, perform: {_ in
+                                uv2.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
+                        let uv3 = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingInFriends", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -83,6 +98,12 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                             }
                                         })}, expandable: false)
+                        uv3
+                            .onChange(of: emailError, perform: {_ in
+                                uv3.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
                         VStack {
                             TextField("Email", text: $other)
                                 .textInputAutocapitalization(.never)
@@ -97,6 +118,7 @@ struct FollowsView: View {
                                 }
                                 .onSubmit {
                                     manageConnection(other: other, selfConnection: "pendingOutFriends", otherConnection: "pendingInFriends", add: true)
+                                    self.other = ""
                                 }
                             
                             Text(emailError)
@@ -106,7 +128,7 @@ struct FollowsView: View {
                             
                             Button {
                                 manageConnection(other: other, selfConnection: "pendingOutFriends", otherConnection: "pendingInFriends", add: true)
-                                
+                                self.other = ""
                             } label: {
                                 Text("Add friend")
                             }
@@ -126,7 +148,7 @@ struct FollowsView: View {
                             Spacer()
                         }
                         Divider()
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "follows", path:
+                        let uv = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "follows", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -139,7 +161,13 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                                     }
                                                 )}, expandable: true)
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingFollows", path:
+                        uv
+                            .onChange(of: emailError, perform: {_ in
+                                uv.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
+                        let uv2 = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingFollows", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -155,6 +183,12 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                                     }
                                                 })}, expandable: false)
+                        uv2
+                            .onChange(of: emailError, perform: {_ in
+                                uv2.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
                         VStack {
                             TextField("Email", text: $other)
                                 .textInputAutocapitalization(.never)
@@ -169,6 +203,7 @@ struct FollowsView: View {
                                 }
                                 .onSubmit {
                                     manageConnection(other: other, selfConnection: "pendingFollows", otherConnection: "pendingFollowers", add: true)
+                                    self.other = ""
                                 }
                             
                             Text(emailError)
@@ -178,7 +213,7 @@ struct FollowsView: View {
                             
                             Button {
                                 manageConnection(other: other, selfConnection: "pendingFollows", otherConnection: "pendingFollowers", add: true)
-                                
+                                self.other = ""
                             } label: {
                                 Text("Follow")
                             }
@@ -198,7 +233,7 @@ struct FollowsView: View {
                             Spacer()
                         }
                         Divider()
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "followers", path:
+                        let uv = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "followers", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -211,7 +246,13 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                                     }
                                                 )}, expandable: true)
-                        UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingFollowers", path:
+                        uv
+                            .onChange(of: emailError, perform: {_ in
+                                uv.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
+                        let uv2 = UserListView(broadcast: Broadcast(data: ["id": -1, "email": FirebaseManager.shared.auth.currentUser?.email ?? ""]), connectionType: "pendingFollowers", path:
                                         FirebaseManager.shared.firestore
                                             .collection("messages")
                                             .document(FirebaseManager.shared.auth.currentUser?.email ?? "")
@@ -234,12 +275,21 @@ struct FollowsView: View {
                                                             .foregroundColor(Color.red)
                                             }
                                         })}, expandable: false)
+                        uv2
+                            .onChange(of: emailError, perform: {_ in
+                                uv2.getUserData(after: {
+                                    toggleBool.toggle()
+                                })
+                            })
                     }
                 }
                 .foregroundColor(Color.theme.foreground)
                 .padding([.leading, .trailing])
             }
             .navigationTitle("People")
+            .onTapGesture {
+                hideKeyboard()
+            }
         }
         .onChange(of: other, perform: {_ in other = other.lowercased()})
     }
@@ -253,7 +303,7 @@ struct FollowsView: View {
             return
         }
         
-        if add && selfConnection == "followers" {
+        if add && (selfConnection == "followers" || selfConnection == "friends") {
             var userSort: [String] = [email, other]
             userSort.sort (by: {
                 $0.compare($1) == .orderedAscending
@@ -331,9 +381,41 @@ struct FollowsView: View {
                             return
                         }
                     }
-                    emailError = "You have successfully \(add ? "added" : "removed") " + other + " from your " + selfConnection
+                    emailError = "Success"
                     success = true
-                    self.other = ""
+                    
+                    var title = ""
+                    var body = ""
+                    if add {
+                        switch selfConnection {
+                        case "friends": do {
+                            title = "Friend request accepted"
+                            body = " has accepted your friend request"
+                        } case "followers": do {
+                            title = "Follow request accepted"
+                            body = " has accepted your follow request"
+                        } case "pendingOutFriends": do {
+                            title = "Friend request"
+                            body = " has sent you a friend request"
+                        } case "pendingFollows": do {
+                            title = "Follow request"
+                            body = " has sent you a follow request"
+                        } default: do {}
+                        }
+                    } else {
+                        switch selfConnection {
+                        case "pendingFollowers": do {
+                            title = "Follow request denied"
+                            body = " has denied your follow request"
+                        } case "pendingInFriends": do {
+                            title = "Friend request denied"
+                            body = " has denied your friend request"
+                        } default: do {}
+                        }
+                    }
+                    if title != "" {
+                        PushNotificationSender().push(emails: [other], title: title, body: "\(String(describing: givenName)) \(String(describing: familyName)) \(body)")
+                    }
                 }
             })
         }
