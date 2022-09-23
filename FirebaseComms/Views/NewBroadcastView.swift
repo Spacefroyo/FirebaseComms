@@ -114,7 +114,7 @@ struct NewBroadcastView: View {
                         }
                     }
                 )
-                .onTapGesture {
+                .onTapGesture (count: 2){
                     hideKeyboard()
                 }
             }
@@ -123,25 +123,30 @@ struct NewBroadcastView: View {
     
     private var newAnnouncement : some View {
         VStack (spacing: 16){
-            ZStack (alignment: .topLeading){
-                
-                
-                Text("Announcement")
-                    .foregroundColor(Color.theme.foreground)
-//                    .padding(.leading, 18)
-                    .padding()
-                    .opacity(description == "" ? 0.4 : 0)
-                
-                TextEditor(text: $description)
-//                        .lineLimit(5)
+            if #available(iOS 16.0, *) {
+                TextField("Announcement", text: $description, axis: .vertical)
                     .frame(height: 100, alignment: .top)
                     .padding([.leading, .trailing], 11)
                     .padding([.top, .bottom], 8)
+                    .background(Color.theme.accent)
+                    .cornerRadius(15)
+            } else {
+                ZStack (alignment: .topLeading){
+                    Text("Announcement")
+                        .foregroundColor(Color.theme.foreground)
+                        .padding()
+                        .opacity(description == "" ? 0.4 : 0)
                     
+                    TextEditor(text: $description)
+                        .frame(height: 100, alignment: .top)
+                        .padding([.leading, .trailing], 11)
+                        .padding([.top, .bottom], 8)
+                        .background(.clear)
+                }
+                .background(Color.theme.accent)
+                .cornerRadius(15)
             }
-            .background(Color.theme.accent)
-//                    .foregroundColor(Color.theme.foreground)
-            .cornerRadius(15)
+            
             
             Text("Images")
             ScrollView(.horizontal) {
@@ -210,21 +215,24 @@ struct NewBroadcastView: View {
             Group {
                 TextField("Event Name", text: $name)
                     .padding()
-//                TextField("Description (Optional)", text: $description)
-//                    .frame(height: 100, alignment: .top)
                 
-                ZStack (alignment: .topLeading){
-                    Text("Description (Optional)")
-                        .foregroundColor(Color.theme.foreground)
-//                        .padding(.leading, 18)
-                        .opacity(description == "" ? 0.4 : 0)
-                        .padding()
-                    
-                    TextEditor(text: $description)
-//                        .lineLimit(5)
+                if #available(iOS 16.0, *) {
+                    TextField("Description (Optional)", text: $description, axis: .vertical)
                         .padding([.leading, .trailing], 11)
                         .padding([.top, .bottom], 8)
                         .frame(height: 100, alignment: .top)
+                } else {
+                    ZStack (alignment: .topLeading){
+                        Text("Description (Optional)")
+                            .foregroundColor(Color.theme.foreground)
+                            .opacity(description == "" ? 0.4 : 0)
+                            .padding()
+                        
+                        TextEditor(text: $description)
+                            .padding([.leading, .trailing], 11)
+                            .padding([.top, .bottom], 8)
+                            .frame(height: 100, alignment: .top)
+                    }
                 }
             }
             .background(Color.theme.accent)

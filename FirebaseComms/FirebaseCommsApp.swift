@@ -35,6 +35,7 @@ class Theme {
         UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: titleColor!], for: .normal)
         
         UITextField.appearance().textColor = titleColor
+        UITextField.appearance().backgroundColor = .clear
         UITextView.appearance().backgroundColor = .clear
         UITextView.appearance().tintColor = titleColor
 

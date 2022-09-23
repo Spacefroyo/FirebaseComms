@@ -182,7 +182,7 @@ struct ExpandedBroadcastView: View, Identifiable {
                 }
             }
         }
-        .onTapGesture {
+        .onTapGesture (count: 2){
             hideKeyboard()
         }
 //        .onTapGesture {

@@ -14,7 +14,7 @@ import FirebaseMessaging
 
 struct LoginView: View {
     
-    @State var isLoading: Bool = false
+    @State var loading: Bool = false
     
     @AppStorage("log_Status") var log_Status = false
     
@@ -50,7 +50,7 @@ struct LoginView: View {
             }
             .overlay(
                 ZStack{
-                    if isLoading{
+                    if loading{
                         Color.black
                             .opacity(0.25)
                             .ignoresSafeArea()
@@ -76,11 +76,11 @@ struct LoginView: View {
 
         let config = GIDConfiguration(clientID: clientID)
         
-        isLoading = true
+        loading = true
         
         GIDSignIn.sharedInstance.signIn(with: config, presenting: getRootViewController()) { [self] user, err in
             if let error = err {
-                isLoading = false
+                loading = false
                 print(error.localizedDescription)
                 return
               }
@@ -89,7 +89,7 @@ struct LoginView: View {
                 let authentication = user?.authentication,
                 let idToken = authentication.idToken
               else {
-                  isLoading = false
+                  loading = false
                 return
               }
 
@@ -134,12 +134,12 @@ struct LoginView: View {
                     }
                     guard (snapshot?.data()) != nil else {
                         storeUserInformation(givenName: givenName, familyName: familyName, profilePicUrl: profilePicUrl)
-                        isLoading = false
+                        loading = false
                         return
                     }
                 }
                 
-                isLoading = false
+                loading = false
                 
                 if let error = err {
                     print(error.localizedDescription)

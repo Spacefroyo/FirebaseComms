@@ -48,18 +48,25 @@ struct CommentsView: View {
         VStack {
 //            VStack {
             HStack {
-                ZStack (alignment: .topLeading){
-                    Text("Add \(_public ? "Public" : "Private") Comment")
-                        .foregroundColor(Color.theme.accent)
-                        .padding()
-                        .opacity(commentString == "" ? 1 : 0)
-                    
-                    TextEditor(text: $commentString)
+                if #available(iOS 16.0, *) {
+                    TextField("Add \(_public ? "Public" : "Private") Comment", text: $commentString, axis: .vertical)
                         .padding([.leading, .trailing], 11)
                         .padding([.top, .bottom], 8)
-//                            .lineLimit(5)
                         .frame(maxHeight: 100)
+                } else {
+                    ZStack (alignment: .topLeading){
+                        Text("Add \(_public ? "Public" : "Private") Comment")
+                            .foregroundColor(Color.theme.accent)
+                            .padding()
+                            .opacity(commentString == "" ? 1 : 0)
+                        
+                        TextEditor(text: $commentString)
+                            .padding([.leading, .trailing], 11)
+                            .padding([.top, .bottom], 8)
+                            .frame(maxHeight: 100)
+                    }
                 }
+                
                 
                 Spacer()
                     
@@ -152,7 +159,7 @@ struct CommentsView: View {
                 }
             }
         )
-        .onTapGesture {
+        .onTapGesture (count: 2){
             hideKeyboard()
         }
     }

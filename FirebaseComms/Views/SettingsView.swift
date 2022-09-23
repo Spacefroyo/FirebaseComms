@@ -92,7 +92,7 @@ struct SettingsView: View {
                             .padding()
                             .foregroundColor(Color.theme.foreground)
                     }
-                    .disabled(loading)
+                    .disabled(loading || firstName == "" || lastName == "")
                     
                     Button{
                         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
@@ -116,12 +116,19 @@ struct SettingsView: View {
                                     tokens.removeAll { str in
                                         str == token
                                     }
-                                    document.setData(["tokens": tokens])
-                                    GIDSignIn.sharedInstance.signOut()
-                                    try? FirebaseManager.shared.auth.signOut()
-                                    withAnimation {
-                                        log_Status = false
-                                        view_Id = 0
+                                    loading = true
+                                    document.setData(["tokens": tokens]) { err in
+                                        if let err = err {
+                                            print(err)
+                                            return
+                                        }
+                                        loading = false
+                                        GIDSignIn.sharedInstance.signOut()
+                                        try? FirebaseManager.shared.auth.signOut()
+                                        withAnimation {
+                                            log_Status = false
+                                            view_Id = 0
+                                        }
                                     }
                                 }
                             }
@@ -142,7 +149,7 @@ struct SettingsView: View {
                     ImagePicker(image: $profilePic)
                         .ignoresSafeArea()
                 }
-                .onTapGesture {
+                .onTapGesture (count: 2){
                     hideKeyboard()
                 }
             }

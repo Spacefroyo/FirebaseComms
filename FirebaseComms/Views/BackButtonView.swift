@@ -11,7 +11,9 @@ struct BackButtonView: View {
     let dismiss: DismissAction
     var body: some View {
         Button {
-            dismiss()
+            withAnimation {
+                dismiss()
+            }
         } label: {
             HStack {
                 Image(systemName: "arrow.left")

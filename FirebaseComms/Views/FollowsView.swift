@@ -85,7 +85,7 @@ struct FollowsView: View {
                                             Text("Pending")
                                                 .foregroundColor(Color.theme.accent)
                                             Button {
-                                                manageConnection(other: email, selfConnection: "pendingInFriends", otherConnection: "pendingOutFriends", add: false)
+                                                manageConnection(other: email, selfConnection: "pendingInFriends", otherConnection: "pendingOutFriends", add: false, accept: true)
                                                 manageConnection(other: email, selfConnection: "friends", otherConnection: "friends", add: true)
                                             } label: {
                                                 Image(systemName: "checkmark.circle.fill")
@@ -262,7 +262,7 @@ struct FollowsView: View {
                                             Text("Pending")
                                                 .foregroundColor(Color.theme.accent)
                                             Button {
-                                                manageConnection(other: email, selfConnection: "pendingFollowers", otherConnection: "pendingFollows", add: false)
+                                                manageConnection(other: email, selfConnection: "pendingFollowers", otherConnection: "pendingFollows", add: false, accept: true)
                                                 manageConnection(other: email, selfConnection: "followers", otherConnection: "follows", add: true)
                                             } label: {
                                                 Image(systemName: "checkmark.circle.fill")
@@ -287,14 +287,14 @@ struct FollowsView: View {
                 .padding([.leading, .trailing])
             }
             .navigationTitle("People")
-            .onTapGesture {
+            .onTapGesture (count: 2){
                 hideKeyboard()
             }
         }
         .onChange(of: other, perform: {_ in other = other.lowercased()})
     }
     
-    func manageConnection(other: String, selfConnection: String, otherConnection: String, add: Bool) {
+    func manageConnection(other: String, selfConnection: String, otherConnection: String, add: Bool, accept: Bool = false) {
         guard let email = FirebaseManager.shared.auth.currentUser?.email else { return }
         
         if other.lowercased() == email {
@@ -402,7 +402,7 @@ struct FollowsView: View {
                             body = " has sent you a follow request"
                         } default: do {}
                         }
-                    } else {
+                    } else if !accept {
                         switch selfConnection {
                         case "pendingFollowers": do {
                             title = "Follow request denied"
@@ -414,7 +414,7 @@ struct FollowsView: View {
                         }
                     }
                     if title != "" {
-                        PushNotificationSender().push(emails: [other], title: title, body: "\(String(describing: givenName)) \(String(describing: familyName)) \(body)")
+                        PushNotificationSender().push(emails: [other], title: title, body: "\(givenName ?? "") \(familyName ?? "") \(body)")
                     }
                 }
             })
